@@ -1,56 +1,69 @@
 #line 1 "C:/Users/20210383/Desktop/project/final_project.c"
-unsigned char mysevenseg[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
-unsigned char tick;
-void ATD_init(void);
-unsigned int ATD_read(void);
-unsigned int myreading;
-unsigned int myVoltage;
 
-interrupt() {
- tick++;
- if (tick == 16) {
- tick = 0;
- myreading = ATD_read();
- PORTB = myreading;
- PORTC = myreading >> 8;
- myVoltage = (unsigned int)(myreading * 50) / 1023;
- }
- INTCON = INTCON & 0xFB;
-}
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D4 at RB0_bit;
+sbit LCD_D5 at RB1_bit;
+sbit LCD_D6 at RB2_bit;
+sbit LCD_D7 at RB3_bit;
+
+sbit LCD_RS_Direction at TRISB4_bit;
+sbit LCD_EN_Direction at TRISB5_bit;
+sbit LCD_D4_Direction at TRISB0_bit;
+sbit LCD_D5_Direction at TRISB1_bit;
+sbit LCD_D6_Direction at TRISB2_bit;
+sbit LCD_D7_Direction at TRISB3_bit;
+
+unsigned char char_count = 0;
+unsigned char letter = 0x00;
+
+char braille_map[64] = {
+ ' ', 'a', 'b', 'k', 'l', 'c', 'i', 'f',
+ 'e', 'h', 'd', 'j', 'm', 'n', 'o', 'p',
+ 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+ 'y', 'z', '1', '2', '3', '4', '5', '6',
+ 'a', '8', '9', '0', 'e', ',', '?', '!',
+ 'b', ';', ':', '/', '@', '#', '&', '*',
+ 'c',' ',' ',' ','d',
+};
 
 void main() {
 
+ TRISC = 0xFF;
  TRISB = 0x00;
- TRISC = 0x00;
- TRISD = 0x00;
+ TRISD = 0xFF;
 
-
- ATD_init();
-
-
- OPTION_REG = 0x07;
- INTCON = 0xA0;
- TMR0 = 0;
+ Lcd_Init();
+ Lcd_Cmd(_LCD_CLEAR);
 
 
  while (1) {
- delay_ms(5);
- PORTA = 0x04;
- PORTD = mysevenseg[myVoltage % 10];
- delay_ms(5);
- PORTA = 0x08;
- PORTD = (mysevenseg[myVoltage / 10]) | 0x80;
+ if (char_count > 31) {
+ Lcd_Cmd(_LCD_CLEAR);
+ char_count = 0;
  }
-}
 
-void ATD_init(void) {
- ADCON0 = 0x41;
- ADCON1 = 0xCE;
- TRISA = 0x01;
-}
+ if ((PORTD & 0x40) == 0x40) {
+ if (char_count == 16) {
+ Lcd_Cmd(_LCD_SECOND_ROW);
+ }
 
-unsigned int ATD_read(void) {
- ADCON0 = ADCON0 | 0x04;
- while (ADCON0 & 0x04);
- return ((ADRESH << 8) | ADRESL);
+ Lcd_Chr_Cp(braille_map[letter]);
+ char_count++;
+
+
+
+ letter = 0x00;
+ while ((PORTD & 0x40) == 0x40);
+ }
+
+
+ if ((PORTC & 0x01) == 0x01) letter |= 0x01;
+ if ((PORTC & 0x02) == 0x02) letter |= 0x02;
+ if ((PORTC & 0x04) == 0x04) letter |= 0x04;
+ if ((PORTC & 0x08) == 0x08) letter |= 0x08;
+ if ((PORTC & 0x10) == 0x10) letter |= 0x10;
+ if ((PORTC & 0x20) == 0x20) letter |= 0x20;
+
+ }
 }

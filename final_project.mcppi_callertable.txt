@@ -1,9 +1,15 @@
 main
 	__CC2DW
 		____DoICP
-	ATD_init
-	Div_16X16_U
-interrupt
-	ATD_read
-	Mul_16X16_U
-	Div_16X16_U
+	Lcd_Init
+		Delay_5500us
+		Delay_1us
+	Lcd_Cmd
+		Delay_1us
+		Delay_5500us
+		Delay_50us
+	Lcd_Chr_CP
+		Lcd_Cmd
+			Delay_1us
+			Delay_5500us
+			Delay_50us

@@ -1,55 +1,68 @@
-unsigned char mysevenseg[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
-unsigned char tick;
-void ATD_init(void);
-unsigned int ATD_read(void);
-unsigned int myreading;
-unsigned int myVoltage;
+// LCD module connections
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D4 at RB0_bit;
+sbit LCD_D5 at RB1_bit;
+sbit LCD_D6 at RB2_bit;
+sbit LCD_D7 at RB3_bit;
 
-interrupt() { // TMR0 overflow interrupt occurs every 32ms
-    tick++; // Increment tick every 32ms
-    if (tick == 16) { // This condition is true approximately every 500ms
-        tick = 0;
-        myreading = ATD_read();
-        PORTB = myreading;         // Display on PORTB the lower 8 bits of myreading
-        PORTC = myreading >> 8;    // Display on PORTC the higher 8 bits by shifting 8 positions
-        myVoltage = (unsigned int)(myreading * 50) / 1023;
-    }
-    INTCON = INTCON & 0xFB; // Clear the interrupt flag
-}
+sbit LCD_RS_Direction at TRISB4_bit;
+sbit LCD_EN_Direction at TRISB5_bit;
+sbit LCD_D4_Direction at TRISB0_bit;
+sbit LCD_D5_Direction at TRISB1_bit;
+sbit LCD_D6_Direction at TRISB2_bit;
+sbit LCD_D7_Direction at TRISB3_bit;
+
+unsigned char char_count = 0; // Variable to keep track of character count
+unsigned char letter = 0x00;  // Variable to store Braille input
+
+char braille_map[64] = {
+    ' ', 'a', 'b', 'k', 'l', 'c', 'i', 'f',  // 0x00 - 0x07
+    'e', 'h', 'd', 'j', 'm', 'n', 'o', 'p', // 0x08 - 0x0F
+    'q', 'r', 's', 't', 'u', 'v', 'w', 'x', // 0x10 - 0x17
+    'y', 'z', '1', '2', '3', '4', '5', '6', // 0x18 - 0x1F
+    'a', '8', '9', '0', 'e', ',', '?', '!', // 0x20 - 0x27
+    'b', ';', ':', '/', '@', '#', '&', '*',  // 0x28 - 0x2F
+    'c',' ',' ',' ','d',
+};
 
 void main() {
-    // Set data direction registers
-    TRISB = 0x00;
-    TRISC = 0x00;
-    TRISD = 0x00;
+    // Initialize LCD and configure ports
+    TRISC = 0xFF; // Set PORTC as input (for buttons RC0 - RC3)
+    TRISB = 0x00; // Set PORTB as output (for LCD)
+    TRISD = 0xFF; // Set PORTD as input (for Enter button)
 
-    // Initialize Analog-to-Digital conversion
-    ATD_init();
+    Lcd_Init();               // Initialize LCD
+    Lcd_Cmd(_LCD_CLEAR);      // Clear display
+   // Lcd_Cmd(_LCD_CURSOR_ON);  // Turn on cursor
 
-    // Timer and interrupt configuration
-    OPTION_REG = 0x07; // Oscillator clock / 4, prescale of 256
-    INTCON = 0xA0;     // Enable global interrupt and TMR0 overflow interrupt
-    TMR0 = 0;
-
-    // Main loop
     while (1) {
-        delay_ms(5);
-        PORTA = 0x04;
-        PORTD = mysevenseg[myVoltage % 10]; // Display first digit
-        delay_ms(5);
-        PORTA = 0x08;
-        PORTD = (mysevenseg[myVoltage / 10]) | 0x80; // Display second digit
+                if (char_count > 31) { // Reset after filling both rows
+                Lcd_Cmd(_LCD_CLEAR);
+                char_count = 0;
+            }
+        // Check if "Enter" button on PORTD6 is pressed
+        if ((PORTD & 0x40) == 0x40) {
+            if (char_count == 16) {
+                Lcd_Cmd(_LCD_SECOND_ROW); // Move cursor to second row
+            }
+
+            Lcd_Chr_Cp(braille_map[letter]); // Display character on LCD
+            char_count++;
+
+
+
+            letter = 0x00; // Reset the letter after printing
+            while ((PORTD & 0x40) == 0x40); // Wait for button release (debouncing)
+        }
+
+        // Read button inputs and update the Braille `letter`
+        if ((PORTC & 0x01) == 0x01) letter |= 0x01; // Set bit 0
+        if ((PORTC & 0x02) == 0x02) letter |= 0x02; // Set bit 1
+        if ((PORTC & 0x04) == 0x04) letter |= 0x04; // Set bit 2
+        if ((PORTC & 0x08) == 0x08) letter |= 0x08; // Set bit 3
+        if ((PORTC & 0x10) == 0x10) letter |= 0x10; // Set bit 4
+        if ((PORTC & 0x20) == 0x20) letter |= 0x20; // Set bit 5
+
     }
-}
-
-void ATD_init(void) {
-    ADCON0 = 0x41; // ATD ON, Don't GO, Channel 0, Fosc/16
-    ADCON1 = 0xCE; // All channels are digital except RA0/AN0 is analog, 500 kHz, right justified
-    TRISA = 0x01;  // Set RA0/AN0 as input
-}
-
-unsigned int ATD_read(void) {
-    ADCON0 = ADCON0 | 0x04; // Start conversion (GO bit set)
-    while (ADCON0 & 0x04);  // Wait for conversion to complete
-    return ((ADRESH << 8) | ADRESL); // Combine high and low bits of the result
 }
