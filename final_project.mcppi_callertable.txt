@@ -1,0 +1,9 @@
+main
+	__CC2DW
+		____DoICP
+	ATD_init
+	Div_16X16_U
+interrupt
+	ATD_read
+	Mul_16X16_U
+	Div_16X16_U
