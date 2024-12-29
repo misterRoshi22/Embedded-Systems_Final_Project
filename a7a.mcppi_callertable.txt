@@ -1,3 +1,0 @@
-main
-	PWM1_Init
-	PWM1_Set_Duty

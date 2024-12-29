@@ -1,4 +1,4 @@
-#line 1 "C:/Users/20210383/Desktop/project/final_project.c"
+#line 1 "C:/Users/karim/Desktop/embedded_project/Embedded-Systems_Final_Project/final_project.c"
 
 sbit LCD_RS at RB4_bit;
 sbit LCD_EN at RB5_bit;
@@ -27,16 +27,13 @@ char braille_map[64] = {
  'c', '!', 'm', 'x', 'd', '!', 'n', 'y',
  'f', '!', 'p', '!', 'g', '!', 'q', '!',
 };
-
 void main() {
 
  TRISD = 0xFF;
  TRISB = 0x00;
 
-
  Lcd_Init();
  Lcd_Cmd(_LCD_CLEAR);
-
 
  while (1) {
  if (char_count > 31) {
@@ -44,6 +41,9 @@ void main() {
  char_count = 0;
  }
 
+
+ if ((PORTD & 0x40) == 0x40) {
+ delay_ms(50);
  if ((PORTD & 0x40) == 0x40) {
  if (char_count == 16) {
  Lcd_Cmd(_LCD_SECOND_ROW);
@@ -52,10 +52,12 @@ void main() {
  Lcd_Chr_Cp(braille_map[letter]);
  char_count++;
 
-
-
  letter = 0x00;
+
+
  while ((PORTD & 0x40) == 0x40);
+ delay_ms(50);
+ }
  }
 
 
@@ -67,6 +69,4 @@ void main() {
  if ((PORTD & 0x20) == 0x20) letter |= 0x20;
  if ((PORTD & 0x80) == 0x80) letter = 0x00;
  }
-
-
 }
