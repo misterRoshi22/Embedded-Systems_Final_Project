@@ -17,21 +17,21 @@ unsigned char char_count = 0; // Variable to keep track of character count
 unsigned char letter = 0x00;  // Variable to store Braille input
 
 char braille_map[64] = {
-    ' ', 'a', 'b', 'k', 'l', 'c', 'i', 'f',  // 0x00 - 0x07
-    'e', 'h', 'd', 'j', 'm', 'n', 'o', 'p',  // 0x08 - 0x0F
-    'q', 'r', 's', 't', 'u', 'v', 'w', 'x',  // 0x10 - 0x17
-    'i', 'z', 's', '2', 'j', 'w', 't', '6',  // 0x18 - 0x1F
-    'a', '8', 'k', 'u', 'e', ',', 'o', 'z',  // 0x20 - 0x27
-    'b', ';', 'l', 'v', 'h', '#', 'r', '*',  // 0x28 - 0x2F
-    'c', ' ', 'm', 'x', 'd', ' ', 'n', 'y',  // 0x30 -0x37
-    'f', ' ', 'p', ' ', 'g', ' ', 'q', ' ',  // 0x38 - 0x3F
+    ' ', '!', '!', '!', '!', '!', '!', '1',  // 0x00 - 0x07
+    '!', '!', '!', '!', '!', '!', '!', '1',  // 0x08 - 0x0F
+    '!', '!', '!', '!', '!', '!', '!', '1',  // 0x10 - 0x17
+    'i', '!', 's', '!', 'j', 'w', 't', '!',  // 0x18 - 0x1F
+    'a', '!', 'k', 'u', 'e', '!', 'o', 'z',  // 0x20 - 0x27
+    'b', '!', 'l', 'v', 'h', '!', 'r', '!',  // 0x28 - 0x2F
+    'c', '!', 'm', 'x', 'd', '!', 'n', 'y',  // 0x30 - 0x37
+    'f', '!', 'p', '!', 'g', '!', 'q', '!',  // 0x38 - 0x3F
 };
 
 void main() {
     // Initialize LCD and configure ports
-    TRISC = 0xFF; // Set PORTC as input (for buttons RC0 - RC3)
+    TRISD = 0xFF; // Set PORTD as input
     TRISB = 0x00; // Set PORTB as output (for LCD)
-    TRISD = 0xFF; // Set PORTD as input (for Enter button)
+    //TRISD = 0xFF; // Set PORTD as input (for Enter button)
 
     Lcd_Init();               // Initialize LCD
     Lcd_Cmd(_LCD_CLEAR);      // Clear display
@@ -58,12 +58,14 @@ void main() {
         }
 
         // Read button inputs and update the Braille `letter`
-        if ((PORTC & 0x01) == 0x01) letter |= 0x01; // Set bit 0
-        if ((PORTC & 0x02) == 0x02) letter |= 0x02; // Set bit 1
-        if ((PORTC & 0x04) == 0x04) letter |= 0x04; // Set bit 2
-        if ((PORTC & 0x08) == 0x08) letter |= 0x08; // Set bit 3
-        if ((PORTC & 0x10) == 0x10) letter |= 0x10; // Set bit 4
-        if ((PORTC & 0x20) == 0x20) letter |= 0x20; // Set bit 5
-
+        if ((PORTD & 0x01) == 0x01) letter |= 0x01; // Set bit 0
+        if ((PORTD & 0x02) == 0x02) letter |= 0x02; // Set bit 1
+        if ((PORTD & 0x04) == 0x04) letter |= 0x04; // Set bit 2
+        if ((PORTD & 0x08) == 0x08) letter |= 0x08; // Set bit 3
+        if ((PORTD & 0x10) == 0x10) letter |= 0x10; // Set bit 4
+        if ((PORTD & 0x20) == 0x20) letter |= 0x20; // Set bit 5
+        if ((PORTD & 0x80) == 0x80) letter = 0x00;  // Clear all bits
     }
+
+
 }

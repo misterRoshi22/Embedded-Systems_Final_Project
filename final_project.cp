@@ -18,21 +18,21 @@ unsigned char char_count = 0;
 unsigned char letter = 0x00;
 
 char braille_map[64] = {
- ' ', 'a', 'b', 'k', 'l', 'c', 'i', 'f',
- 'e', 'h', 'd', 'j', 'm', 'n', 'o', 'p',
- 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
- 'i', 'z', 's', '2', 'j', 'w', 't', '6',
- 'a', '8', 'k', 'u', 'e', ',', 'o', 'z',
- 'b', ';', 'l', 'v', 'h', '#', 'r', '*',
- 'c', ' ', 'm', 'x', 'd', ' ', 'n', 'y',
- 'f', ' ', 'p', ' ', 'g', ' ', 'q', ' ',
+ ' ', '!', '!', '!', '!', '!', '!', '1',
+ '!', '!', '!', '!', '!', '!', '!', '1',
+ '!', '!', '!', '!', '!', '!', '!', '1',
+ 'i', '!', 's', '!', 'j', 'w', 't', '!',
+ 'a', '!', 'k', 'u', 'e', '!', 'o', 'z',
+ 'b', '!', 'l', 'v', 'h', '!', 'r', '!',
+ 'c', '!', 'm', 'x', 'd', '!', 'n', 'y',
+ 'f', '!', 'p', '!', 'g', '!', 'q', '!',
 };
 
 void main() {
 
- TRISC = 0xFF;
- TRISB = 0x00;
  TRISD = 0xFF;
+ TRISB = 0x00;
+
 
  Lcd_Init();
  Lcd_Cmd(_LCD_CLEAR);
@@ -59,12 +59,14 @@ void main() {
  }
 
 
- if ((PORTC & 0x01) == 0x01) letter |= 0x01;
- if ((PORTC & 0x02) == 0x02) letter |= 0x02;
- if ((PORTC & 0x04) == 0x04) letter |= 0x04;
- if ((PORTC & 0x08) == 0x08) letter |= 0x08;
- if ((PORTC & 0x10) == 0x10) letter |= 0x10;
- if ((PORTC & 0x20) == 0x20) letter |= 0x20;
-
+ if ((PORTD & 0x01) == 0x01) letter |= 0x01;
+ if ((PORTD & 0x02) == 0x02) letter |= 0x02;
+ if ((PORTD & 0x04) == 0x04) letter |= 0x04;
+ if ((PORTD & 0x08) == 0x08) letter |= 0x08;
+ if ((PORTD & 0x10) == 0x10) letter |= 0x10;
+ if ((PORTD & 0x20) == 0x20) letter |= 0x20;
+ if ((PORTD & 0x80) == 0x80) letter = 0x00;
  }
+
+
 }
