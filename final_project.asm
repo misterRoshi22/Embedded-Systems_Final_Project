@@ -1,183 +1,287 @@
 
-_main:
+_IntToStr:
 
-;final_project.c,29 :: 		void main() {
-;final_project.c,31 :: 		TRISD = 0xFF; // Set PORTD as input
-	MOVLW      255
-	MOVWF      TRISD+0
-;final_project.c,32 :: 		TRISB = 0x00; // Set PORTB as output (for LCD)
-	CLRF       TRISB+0
-;final_project.c,34 :: 		Lcd_Init();               // Initialize LCD
-	CALL       _Lcd_Init+0
-;final_project.c,35 :: 		Lcd_Cmd(_LCD_CLEAR);      // Clear display
-	MOVLW      1
-	MOVWF      FARG_Lcd_Cmd_out_char+0
-	CALL       _Lcd_Cmd+0
-;final_project.c,37 :: 		while (1) {
-L_main0:
-;final_project.c,38 :: 		if (char_count > 31) { // Reset after filling both rows
-	MOVF       _char_count+0, 0
-	SUBLW      31
+	CLRF       IntToStr_i_L0+0
+	CLRF       IntToStr_i_L0+1
+	MOVF       FARG_IntToStr_num+0, 0
+	XORLW      0
+	BTFSS      STATUS+0, 2
+	GOTO       L_IntToStr0
+	MOVF       FARG_IntToStr_str+0, 0
+	MOVWF      FSR
+	MOVLW      48
+	MOVWF      INDF+0
+	INCF       FARG_IntToStr_str+0, 0
+	MOVWF      FSR
+	CLRF       INDF+0
+	GOTO       L_end_IntToStr
+L_IntToStr0:
+L_IntToStr1:
+	MOVF       FARG_IntToStr_num+0, 0
+	SUBLW      0
 	BTFSC      STATUS+0, 0
-	GOTO       L_main2
-;final_project.c,39 :: 		Lcd_Cmd(_LCD_CLEAR);
+	GOTO       L_IntToStr2
+	MOVF       IntToStr_i_L0+0, 0
+	ADDLW      IntToStr_temp_L0+0
+	MOVWF      FLOC__IntToStr+0
+	MOVLW      10
+	MOVWF      R4+0
+	MOVF       FARG_IntToStr_num+0, 0
+	MOVWF      R0+0
+	CALL       _Div_8X8_U+0
+	MOVF       R8+0, 0
+	MOVWF      R0+0
+	MOVLW      48
+	ADDWF      R0+0, 1
+	MOVF       FLOC__IntToStr+0, 0
+	MOVWF      FSR
+	MOVF       R0+0, 0
+	MOVWF      INDF+0
+	INCF       IntToStr_i_L0+0, 1
+	BTFSC      STATUS+0, 2
+	INCF       IntToStr_i_L0+1, 1
+	MOVLW      10
+	MOVWF      R4+0
+	MOVF       FARG_IntToStr_num+0, 0
+	MOVWF      R0+0
+	CALL       _Div_8X8_U+0
+	MOVF       R0+0, 0
+	MOVWF      FARG_IntToStr_num+0
+	GOTO       L_IntToStr1
+L_IntToStr2:
+	MOVF       IntToStr_i_L0+0, 0
+	ADDLW      IntToStr_temp_L0+0
+	MOVWF      FSR
+	CLRF       INDF+0
+	MOVF       IntToStr_i_L0+0, 0
+	MOVWF      IntToStr_length_L0+0
+	MOVF       IntToStr_i_L0+1, 0
+	MOVWF      IntToStr_length_L0+1
+	CLRF       IntToStr_j_L0+0
+	CLRF       IntToStr_j_L0+1
+L_IntToStr3:
+	MOVLW      128
+	XORWF      IntToStr_j_L0+1, 0
+	MOVWF      R0+0
+	MOVLW      128
+	XORWF      IntToStr_length_L0+1, 0
+	SUBWF      R0+0, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__IntToStr13
+	MOVF       IntToStr_length_L0+0, 0
+	SUBWF      IntToStr_j_L0+0, 0
+L__IntToStr13:
+	BTFSC      STATUS+0, 0
+	GOTO       L_IntToStr4
+	MOVF       IntToStr_j_L0+0, 0
+	ADDWF      FARG_IntToStr_str+0, 0
+	MOVWF      R2+0
+	MOVF       IntToStr_j_L0+0, 0
+	SUBWF      IntToStr_length_L0+0, 0
+	MOVWF      R0+0
+	MOVF       IntToStr_j_L0+1, 0
+	BTFSS      STATUS+0, 0
+	ADDLW      1
+	SUBWF      IntToStr_length_L0+1, 0
+	MOVWF      R0+1
 	MOVLW      1
-	MOVWF      FARG_Lcd_Cmd_out_char+0
-	CALL       _Lcd_Cmd+0
-;final_project.c,40 :: 		char_count = 0;
-	CLRF       _char_count+0
-;final_project.c,41 :: 		}
-L_main2:
-;final_project.c,44 :: 		if ((PORTD & 0x40) == 0x40) {  // Button pressed
-	MOVLW      64
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      64
-	BTFSS      STATUS+0, 2
-	GOTO       L_main3
-;final_project.c,45 :: 		delay_ms(50);            // Debouncing delay
-	MOVLW      130
-	MOVWF      R12+0
-	MOVLW      221
-	MOVWF      R13+0
-L_main4:
-	DECFSZ     R13+0, 1
-	GOTO       L_main4
-	DECFSZ     R12+0, 1
-	GOTO       L_main4
-	NOP
-	NOP
-;final_project.c,46 :: 		if ((PORTD & 0x40) == 0x40) {  // Confirm the button is still pressed
-	MOVLW      64
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      64
-	BTFSS      STATUS+0, 2
-	GOTO       L_main5
-;final_project.c,47 :: 		if (char_count == 16) {
-	MOVF       _char_count+0, 0
-	XORLW      16
-	BTFSS      STATUS+0, 2
-	GOTO       L_main6
-;final_project.c,48 :: 		Lcd_Cmd(_LCD_SECOND_ROW); // Move cursor to second row
-	MOVLW      192
-	MOVWF      FARG_Lcd_Cmd_out_char+0
-	CALL       _Lcd_Cmd+0
-;final_project.c,49 :: 		}
-L_main6:
-;final_project.c,51 :: 		Lcd_Chr_Cp(braille_map[letter]); // Display character on LCD
-	MOVF       _letter+0, 0
-	ADDLW      _braille_map+0
+	SUBWF      R0+0, 1
+	BTFSS      STATUS+0, 0
+	DECF       R0+1, 1
+	MOVF       R0+0, 0
+	ADDLW      IntToStr_temp_L0+0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
-	MOVWF      FARG_Lcd_Chr_CP_out_char+0
-	CALL       _Lcd_Chr_CP+0
-;final_project.c,52 :: 		char_count++;
-	INCF       _char_count+0, 1
-;final_project.c,54 :: 		letter = 0x00; // Reset the letter after printing
-	CLRF       _letter+0
-;final_project.c,57 :: 		while ((PORTD & 0x40) == 0x40); // Wait for button to be released
-L_main7:
-	MOVLW      64
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      64
-	BTFSS      STATUS+0, 2
-	GOTO       L_main8
-	GOTO       L_main7
-L_main8:
-;final_project.c,58 :: 		delay_ms(50);                // Debouncing delay after release
-	MOVLW      130
-	MOVWF      R12+0
-	MOVLW      221
-	MOVWF      R13+0
-L_main9:
-	DECFSZ     R13+0, 1
-	GOTO       L_main9
-	DECFSZ     R12+0, 1
-	GOTO       L_main9
-	NOP
-	NOP
-;final_project.c,59 :: 		}
-L_main5:
-;final_project.c,60 :: 		}
-L_main3:
-;final_project.c,63 :: 		if ((PORTD & 0x01) == 0x01) letter |= 0x01; // Set bit 0
+	MOVWF      R0+0
+	MOVF       R2+0, 0
+	MOVWF      FSR
+	MOVF       R0+0, 0
+	MOVWF      INDF+0
+	INCF       IntToStr_j_L0+0, 1
+	BTFSC      STATUS+0, 2
+	INCF       IntToStr_j_L0+1, 1
+	GOTO       L_IntToStr3
+L_IntToStr4:
+	MOVF       IntToStr_length_L0+0, 0
+	ADDWF      FARG_IntToStr_str+0, 0
+	MOVWF      FSR
+	CLRF       INDF+0
+L_end_IntToStr:
+	RETURN
+; end of _IntToStr
+
+_main:
+
+	CLRF       TRISB+0
+	CALL       _Lcd_Init+0
 	MOVLW      1
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      1
-	BTFSS      STATUS+0, 2
-	GOTO       L_main10
-	BSF        _letter+0, 0
-L_main10:
-;final_project.c,64 :: 		if ((PORTD & 0x02) == 0x02) letter |= 0x02; // Set bit 1
+	MOVWF      FARG_Lcd_Cmd_out_char+0
+	CALL       _Lcd_Cmd+0
+	MOVLW      12
+	MOVWF      FARG_Lcd_Cmd_out_char+0
+	CALL       _Lcd_Cmd+0
+	CALL       _ATD_init+0
+	MOVLW      96
+	MOVWF      TRISC+0
+	CALL       _CCPPWM_init+0
+	MOVLW      231
+	ANDWF      PORTC+0, 1
+L_main6:
+	BTFSS      PORTC+0, 5
+	GOTO       L_main8
+	MOVLW      24
+	IORWF      PORTC+0, 1
+L_main8:
+	BTFSS      PORTC+0, 6
+	GOTO       L_main9
+	MOVLW      231
+	ANDWF      PORTC+0, 1
+L_main9:
+	CALL       _ATD_read+0
+	MOVF       R0+0, 0
+	MOVWF      main_k_L0+0
+	MOVF       R0+1, 0
+	MOVWF      main_k_L0+1
+	MOVLW      5
+	MOVWF      R4+0
+	MOVLW      0
+	MOVWF      R4+1
+	CALL       _Mul_16X16_U+0
+	MOVLW      255
+	MOVWF      R4+0
+	MOVLW      3
+	MOVWF      R4+1
+	CALL       _Div_16X16_U+0
+	MOVF       R0+0, 0
+	MOVWF      FARG_IntToStr_num+0
+	MOVLW      _print_out+0
+	MOVWF      FARG_IntToStr_str+0
+	CALL       _IntToStr+0
+	MOVLW      1
+	MOVWF      FARG_Lcd_Out_row+0
+	MOVLW      1
+	MOVWF      FARG_Lcd_Out_column+0
+	MOVLW      _print_out+0
+	MOVWF      FARG_Lcd_Out_text+0
+	CALL       _Lcd_Out+0
+	MOVF       main_k_L0+0, 0
+	MOVWF      FARG_IntToStr_num+0
+	MOVLW      _print_out+0
+	MOVWF      FARG_IntToStr_str+0
+	CALL       _IntToStr+0
 	MOVLW      2
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      2
-	BTFSS      STATUS+0, 2
-	GOTO       L_main11
-	BSF        _letter+0, 1
-L_main11:
-;final_project.c,65 :: 		if ((PORTD & 0x04) == 0x04) letter |= 0x04; // Set bit 2
-	MOVLW      4
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      4
-	BTFSS      STATUS+0, 2
-	GOTO       L_main12
-	BSF        _letter+0, 2
-L_main12:
-;final_project.c,66 :: 		if ((PORTD & 0x08) == 0x08) letter |= 0x08; // Set bit 3
-	MOVLW      8
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      8
-	BTFSS      STATUS+0, 2
-	GOTO       L_main13
-	BSF        _letter+0, 3
-L_main13:
-;final_project.c,67 :: 		if ((PORTD & 0x10) == 0x10) letter |= 0x10; // Set bit 4
-	MOVLW      16
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      16
-	BTFSS      STATUS+0, 2
-	GOTO       L_main14
-	BSF        _letter+0, 4
-L_main14:
-;final_project.c,68 :: 		if ((PORTD & 0x20) == 0x20) letter |= 0x20; // Set bit 5
-	MOVLW      32
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      32
-	BTFSS      STATUS+0, 2
-	GOTO       L_main15
-	BSF        _letter+0, 5
-L_main15:
-;final_project.c,69 :: 		if ((PORTD & 0x80) == 0x80) letter = 0x00;  // Clear all bits
-	MOVLW      128
-	ANDWF      PORTD+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      128
-	BTFSS      STATUS+0, 2
-	GOTO       L_main16
-	CLRF       _letter+0
-L_main16:
-;final_project.c,70 :: 		}
-	GOTO       L_main0
-;final_project.c,71 :: 		}
+	MOVWF      FARG_Lcd_Out_row+0
+	MOVLW      1
+	MOVWF      FARG_Lcd_Out_column+0
+	MOVLW      _print_out+0
+	MOVWF      FARG_Lcd_Out_text+0
+	CALL       _Lcd_Out+0
+	MOVF       main_k_L0+0, 0
+	MOVWF      R0+0
+	MOVF       main_k_L0+1, 0
+	MOVWF      R0+1
+	RRF        R0+1, 1
+	RRF        R0+0, 1
+	BCF        R0+1, 7
+	RRF        R0+1, 1
+	RRF        R0+0, 1
+	BCF        R0+1, 7
+	MOVLW      250
+	MOVWF      R4+0
+	CLRF       R4+1
+	CALL       _Mul_16X16_U+0
+	MOVLW      255
+	MOVWF      R4+0
+	CLRF       R4+1
+	CALL       _Div_16X16_U+0
+	MOVF       R0+0, 0
+	MOVWF      _myspeed+0
+	MOVF       R0+0, 0
+	MOVWF      FARG_IntToStr_num+0
+	MOVLW      _print_out+0
+	MOVWF      FARG_IntToStr_str+0
+	CALL       _IntToStr+0
+	MOVLW      2
+	MOVWF      FARG_Lcd_Out_row+0
+	MOVLW      9
+	MOVWF      FARG_Lcd_Out_column+0
+	MOVLW      _print_out+0
+	MOVWF      FARG_Lcd_Out_text+0
+	CALL       _Lcd_Out+0
+	MOVF       _myspeed+0, 0
+	MOVWF      FARG_motor1+0
+	CALL       _motor1+0
+	MOVLW      125
+	MOVWF      FARG_motor2+0
+	CALL       _motor2+0
+	GOTO       L_main6
 L_end_main:
 	GOTO       $+0
 ; end of _main
+
+_ATD_init:
+
+	MOVLW      65
+	MOVWF      ADCON0+0
+	MOVLW      206
+	MOVWF      ADCON1+0
+	MOVLW      1
+	MOVWF      TRISA+0
+L_end_ATD_init:
+	RETURN
+; end of _ATD_init
+
+_ATD_read:
+
+	BSF        ADCON0+0, 2
+L_ATD_read10:
+	BTFSS      ADCON0+0, 2
+	GOTO       L_ATD_read11
+	GOTO       L_ATD_read10
+L_ATD_read11:
+	MOVF       ADRESH+0, 0
+	MOVWF      R0+1
+	CLRF       R0+0
+	MOVF       ADRESL+0, 0
+	IORWF      R0+0, 1
+	MOVLW      0
+	IORWF      R0+1, 1
+L_end_ATD_read:
+	RETURN
+; end of _ATD_read
+
+_CCPPWM_init:
+
+	MOVLW      7
+	MOVWF      T2CON+0
+	MOVLW      12
+	MOVWF      CCP1CON+0
+	MOVLW      12
+	MOVWF      CCP2CON+0
+	MOVLW      250
+	MOVWF      PR2+0
+	MOVLW      96
+	MOVWF      TRISC+0
+	MOVLW      125
+	MOVWF      CCPR1L+0
+	MOVLW      125
+	MOVWF      CCPR2L+0
+L_end_CCPPWM_init:
+	RETURN
+; end of _CCPPWM_init
+
+_motor1:
+
+	MOVF       FARG_motor1_speed+0, 0
+	MOVWF      CCPR1L+0
+L_end_motor1:
+	RETURN
+; end of _motor1
+
+_motor2:
+
+	MOVF       FARG_motor2_speed+0, 0
+	MOVWF      CCPR2L+0
+L_end_motor2:
+	RETURN
+; end of _motor2

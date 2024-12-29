@@ -56,6 +56,8 @@ adon
 adon_bit
 adresh
 adresl
+atd_init
+atd_read
 b0
 b1
 b2
@@ -71,7 +73,6 @@ bclif_bit
 bf
 bf_bit
 boot16_delay_5ms
-braille_map
 brgh
 brgh_bit
 byte2double
@@ -119,13 +120,13 @@ ccp2x
 ccp2x_bit
 ccp2y
 ccp2y_bit
+ccppwm_init
 ccpr1
 ccpr1h
 ccpr1l
 ccpr2
 ccpr2h
 ccpr2l
-char_count
 chs0
 chs0_bit
 chs1
@@ -254,6 +255,7 @@ intedg
 intedg_bit
 intf
 intf_bit
+inttostr
 irp
 irp_bit
 lcd_chr
@@ -274,10 +276,11 @@ lcd_out
 lcd_out_cp
 lcd_rs
 lcd_rs_direction
-letter
 longint2double
 longword2double
 main
+motor1
+motor2
 mul_16x16_s
 mul_16x16_u
 mul_32x32_fp
@@ -285,6 +288,7 @@ mul_32x32_s
 mul_32x32_u
 mul_8x8_s
 mul_8x8_u
+myspeed
 not_a
 not_a_bit
 not_address
@@ -349,6 +353,7 @@ portc
 portd
 porte
 pr2
+print_out
 ps0
 ps0_bit
 ps1

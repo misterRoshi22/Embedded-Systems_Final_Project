@@ -14,59 +14,111 @@ sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D7_Direction at TRISB3_bit;
 
-unsigned char char_count = 0;
-unsigned char letter = 0x00;
+void ATD_init(void);
+void CCPPWM_init(void);
+unsigned int ATD_read(void);
+void motor1(unsigned char);
+void motor2(unsigned char);
 
-char braille_map[64] = {
- ' ', '!', '!', '!', '!', '!', '!', '1',
- '!', '!', '!', '!', '!', '!', '!', '1',
- '!', '!', '!', '!', '!', '!', '!', '1',
- 'i', '!', 's', '!', 'j', 'w', 't', '!',
- 'a', '!', 'k', 'u', 'e', '!', 'o', 'z',
- 'b', '!', 'l', 'v', 'h', '!', 'r', '!',
- 'c', '!', 'm', 'x', 'd', '!', 'n', 'y',
- 'f', '!', 'p', '!', 'g', '!', 'q', '!',
-};
+unsigned char myspeed;
+char print_out[6];
+
+void IntToStr(unsigned char num, char *str) {
+ char temp[6];
+ int i = 0, j, length;
+
+
+ if (num == 0) {
+ str[0] = '0';
+ str[1] = '\0';
+ return;
+ }
+
+
+ while (num > 0) {
+ temp[i++] = (num % 10) + '0';
+ num /= 10;
+ }
+ temp[i] = '\0';
+
+
+ length = i;
+ for (j = 0; j < length; j++) {
+ str[j] = temp[length - j - 1];
+ }
+ str[length] = '\0';
+}
+
+
 void main() {
-
- TRISD = 0xFF;
+ unsigned int k;
+ unsigned char myscaledVoltage;
  TRISB = 0x00;
-
  Lcd_Init();
  Lcd_Cmd(_LCD_CLEAR);
+ Lcd_Cmd(_LCD_CURSOR_OFF);
+
+
+
+
+ ATD_init();
+ TRISC = 0x60;
+
+ CCPPWM_init();
+
+ PORTC &= 0xE7;
 
  while (1) {
- if (char_count > 31) {
- Lcd_Cmd(_LCD_CLEAR);
- char_count = 0;
+ if ((PORTC & 0x20)) {
+ PORTC |= 0x18;
+ }
+ if ((PORTC & 0x40)) {
+ PORTC &= 0xE7;
  }
 
+ k = ATD_read();
+ myscaledVoltage = ((k * 5) / 1023);
+ IntToStr(myscaledVoltage, print_out);
+ Lcd_Out(1, 1, print_out);
+ IntToStr(k, print_out);
+ Lcd_Out(2, 1, print_out);
 
- if ((PORTD & 0x40) == 0x40) {
- delay_ms(50);
- if ((PORTD & 0x40) == 0x40) {
- if (char_count == 16) {
- Lcd_Cmd(_LCD_SECOND_ROW);
+
+ myspeed = (((k >> 2) * 250) / 255);
+ IntToStr(myspeed, print_out);
+ Lcd_Out(2, 9, print_out);
+
+ motor1(myspeed);
+ motor2(125);
  }
+}
 
- Lcd_Chr_Cp(braille_map[letter]);
- char_count++;
+void ATD_init(void) {
+ ADCON0 = 0x41;
+ ADCON1 = 0xCE;
+ TRISA = 0x01;
+}
 
- letter = 0x00;
+unsigned int ATD_read(void) {
+ ADCON0 |= 0x04;
+ while (ADCON0 & 0x04);
+ return (ADRESH << 8) | ADRESL;
+}
 
+void CCPPWM_init(void) {
+ T2CON = 0x07;
+ CCP1CON = 0x0C;
+ CCP2CON = 0x0C;
+ PR2 = 250;
+ TRISC = 0x60;
+ CCPR1L = 125;
+ CCPR2L = 125;
+}
 
- while ((PORTD & 0x40) == 0x40);
- delay_ms(50);
- }
- }
+void motor1(unsigned char speed) {
+ CCPR1L = speed;
+}
 
-
- if ((PORTD & 0x01) == 0x01) letter |= 0x01;
- if ((PORTD & 0x02) == 0x02) letter |= 0x02;
- if ((PORTD & 0x04) == 0x04) letter |= 0x04;
- if ((PORTD & 0x08) == 0x08) letter |= 0x08;
- if ((PORTD & 0x10) == 0x10) letter |= 0x10;
- if ((PORTD & 0x20) == 0x20) letter |= 0x20;
- if ((PORTD & 0x80) == 0x80) letter = 0x00;
- }
+void motor2(unsigned char speed) {
+ CCPR2L = speed;
 }
