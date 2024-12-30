@@ -68,7 +68,7 @@ void main() {
                     break;
 
                 case 0b010: draw_vertical_line(STEPS_HALF_ROTATION);     // E1
-                    break;+/
+                    break;
 
                 case 0b011: draw_horizontal_line(STEPS_FULL_ROTATION);   // E1, E0
                     break;

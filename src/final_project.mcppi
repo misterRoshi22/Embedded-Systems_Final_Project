@@ -15,6 +15,13 @@ Value=0
 Value=0
 [EEPROM_DEFINITION]
 Value=
+[PROGRAMMER_TYPE]
+Value=mikroE mikroProg
+[CODEGRIP_OPTIONS]
+CODEGRIP_SPEED=0
+CODEGRIP_VERIFY_AFTER=0
+CODEGRIP_SWBP_ENABLED=0
+CODEGRIP_PROGRAMMING_TYPE=
 [FILES]
 File0=final_project.c
 Count=1
@@ -25,7 +32,7 @@ Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=final_project.c
-File1=.\S:\New folder\mikroC PRO for PIC\Defs\P16F877A.c
+File1=..\..\..\..\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\P16F877A.c
 Count=2
 [EEPROM]
 Count=0
@@ -44,19 +51,13 @@ Count=0
 [Useses]
 File0=Lcd
 File1=Lcd_Constants
-Count=2
+File2=PWM
+Count=3
 [EXPANDED_NODES]
 0=final_project.mcppi
 Count=1
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
 1=System Libraries
-235=Lcd
+216=Lcd
 Count=3
-[PROGRAMMER_TYPE]
-Value=mikroE mikroProg
-[CODEGRIP_OPTIONS]
-CODEGRIP_SPEED=0
-CODEGRIP_VERIFY_AFTER=0
-CODEGRIP_SWBP_ENABLED=0
-CODEGRIP_PROGRAMMING_TYPE=
