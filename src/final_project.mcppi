@@ -52,12 +52,15 @@ Count=0
 File0=Lcd
 File1=Lcd_Constants
 File2=PWM
-Count=3
+File3=Conversions
+File4=C_String
+Count=5
 [EXPANDED_NODES]
 0=final_project.mcppi
 Count=1
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
 1=System Libraries
+30=Conversions
 216=Lcd
-Count=3
+Count=4

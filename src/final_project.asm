@@ -1,332 +1,173 @@
 
-_draw_horizontal_line:
+_ATD_init:
 
-;final_project.c,15 :: 		void draw_horizontal_line(unsigned char steps) { //motor 1 step pin is connected to C2
-;final_project.c,16 :: 		for (i = 0; i < steps; i++) {
-	CLRF       _i+0
-L_draw_horizontal_line0:
-	MOVF       FARG_draw_horizontal_line_steps+0, 0
-	SUBWF      _i+0, 0
-	BTFSC      STATUS+0, 0
-	GOTO       L_draw_horizontal_line1
-;final_project.c,17 :: 		PORTC |= 0x04;  //0000 0100
-	BSF        PORTC+0, 2
-;final_project.c,18 :: 		Delay_ms(STEP_MOTOR_SPEED);
-	MOVLW      6
-	MOVWF      R12+0
-	MOVLW      48
-	MOVWF      R13+0
-L_draw_horizontal_line3:
-	DECFSZ     R13+0, 1
-	GOTO       L_draw_horizontal_line3
-	DECFSZ     R12+0, 1
-	GOTO       L_draw_horizontal_line3
-	NOP
-;final_project.c,19 :: 		PORTC &= 0xFB; //1111 1011
-	MOVLW      251
-	ANDWF      PORTC+0, 1
-;final_project.c,20 :: 		Delay_ms(STEP_MOTOR_SPEED);
-	MOVLW      6
-	MOVWF      R12+0
-	MOVLW      48
-	MOVWF      R13+0
-L_draw_horizontal_line4:
-	DECFSZ     R13+0, 1
-	GOTO       L_draw_horizontal_line4
-	DECFSZ     R12+0, 1
-	GOTO       L_draw_horizontal_line4
-	NOP
-;final_project.c,16 :: 		for (i = 0; i < steps; i++) {
-	INCF       _i+0, 1
-;final_project.c,21 :: 		}
-	GOTO       L_draw_horizontal_line0
-L_draw_horizontal_line1:
-;final_project.c,22 :: 		}
-L_end_draw_horizontal_line:
+;final_project.c,22 :: 		void ATD_init(void) {
+;final_project.c,23 :: 		ADCON0 = 0x41;   // ADC enabled, Fosc/16, Channel 0 (AN0)
+	MOVLW      65
+	MOVWF      ADCON0+0
+;final_project.c,24 :: 		ADCON1 = 0xCE;   // All pins digital except AN0, right justified
+	MOVLW      206
+	MOVWF      ADCON1+0
+;final_project.c,25 :: 		TRISA  = 0x01;   // Configure RA0/AN0 as input
+	MOVLW      1
+	MOVWF      TRISA+0
+;final_project.c,26 :: 		}
+L_end_ATD_init:
 	RETURN
-; end of _draw_horizontal_line
+; end of _ATD_init
 
-_draw_vertical_line:
+_ATD_read:
 
-;final_project.c,24 :: 		void draw_vertical_line(unsigned char steps) { //motor 2 step pin is connected to C3
-;final_project.c,25 :: 		for(i = 0; i < steps; i++) {
-	CLRF       _i+0
-L_draw_vertical_line5:
-	MOVF       FARG_draw_vertical_line_steps+0, 0
-	SUBWF      _i+0, 0
-	BTFSC      STATUS+0, 0
-	GOTO       L_draw_vertical_line6
-;final_project.c,26 :: 		PORTC |= 0x08; // 0000 1000
-	BSF        PORTC+0, 3
-;final_project.c,27 :: 		Delay_ms(STEP_MOTOR_SPEED);
-	MOVLW      6
-	MOVWF      R12+0
-	MOVLW      48
-	MOVWF      R13+0
-L_draw_vertical_line8:
-	DECFSZ     R13+0, 1
-	GOTO       L_draw_vertical_line8
-	DECFSZ     R12+0, 1
-	GOTO       L_draw_vertical_line8
-	NOP
-;final_project.c,28 :: 		PORTC &= 0xF7; // 1111 0111
-	MOVLW      247
-	ANDWF      PORTC+0, 1
-;final_project.c,29 :: 		DElay_ms(STEP_MOTOR_SPEED);
-	MOVLW      6
-	MOVWF      R12+0
-	MOVLW      48
-	MOVWF      R13+0
-L_draw_vertical_line9:
-	DECFSZ     R13+0, 1
-	GOTO       L_draw_vertical_line9
-	DECFSZ     R12+0, 1
-	GOTO       L_draw_vertical_line9
-	NOP
-;final_project.c,25 :: 		for(i = 0; i < steps; i++) {
-	INCF       _i+0, 1
-;final_project.c,30 :: 		}
-	GOTO       L_draw_vertical_line5
-L_draw_vertical_line6:
-;final_project.c,31 :: 		}
-L_end_draw_vertical_line:
+;final_project.c,29 :: 		unsigned int ATD_read(void) {
+;final_project.c,30 :: 		ADCON0 |= 0x04;         // Start ADC conversion
+	BSF        ADCON0+0, 2
+;final_project.c,31 :: 		while (ADCON0 & 0x04);  // Wait for conversion to complete
+L_ATD_read0:
+	BTFSS      ADCON0+0, 2
+	GOTO       L_ATD_read1
+	GOTO       L_ATD_read0
+L_ATD_read1:
+;final_project.c,32 :: 		return ((ADRESH << 8) | ADRESL);  // Return 10-bit result (0..1023)
+	MOVF       ADRESH+0, 0
+	MOVWF      R0+1
+	CLRF       R0+0
+	MOVF       ADRESL+0, 0
+	IORWF      R0+0, 1
+	MOVLW      0
+	IORWF      R0+1, 1
+;final_project.c,33 :: 		}
+L_end_ATD_read:
 	RETURN
-; end of _draw_vertical_line
+; end of _ATD_read
 
-_draw_diagonal_line:
+_interrupt:
+	MOVWF      R15+0
+	SWAPF      STATUS+0, 0
+	CLRF       STATUS+0
+	MOVWF      ___saveSTATUS+0
+	MOVF       PCLATH+0, 0
+	MOVWF      ___savePCLATH+0
+	CLRF       PCLATH+0
 
-;final_project.c,33 :: 		void draw_diagonal_line(unsigned char steps) {
-;final_project.c,34 :: 		for(i = 0; i < steps; i++) {
-	CLRF       _i+0
-L_draw_diagonal_line10:
-	MOVF       FARG_draw_diagonal_line_steps+0, 0
-	SUBWF      _i+0, 0
-	BTFSC      STATUS+0, 0
-	GOTO       L_draw_diagonal_line11
-;final_project.c,35 :: 		PORTC |= 0x0C; // 0000 1100
-	MOVLW      12
-	IORWF      PORTC+0, 1
-;final_project.c,36 :: 		Delay_ms(STEP_MOTOR_SPEED);
-	MOVLW      6
-	MOVWF      R12+0
-	MOVLW      48
-	MOVWF      R13+0
-L_draw_diagonal_line13:
-	DECFSZ     R13+0, 1
-	GOTO       L_draw_diagonal_line13
-	DECFSZ     R12+0, 1
-	GOTO       L_draw_diagonal_line13
-	NOP
-;final_project.c,37 :: 		PORTC &= 0xF3; // 1111 0011
-	MOVLW      243
-	ANDWF      PORTC+0, 1
-;final_project.c,38 :: 		Delay_ms(STEP_MOTOR_SPEED);
-	MOVLW      6
-	MOVWF      R12+0
-	MOVLW      48
-	MOVWF      R13+0
-L_draw_diagonal_line14:
-	DECFSZ     R13+0, 1
-	GOTO       L_draw_diagonal_line14
-	DECFSZ     R12+0, 1
-	GOTO       L_draw_diagonal_line14
-	NOP
-;final_project.c,34 :: 		for(i = 0; i < steps; i++) {
-	INCF       _i+0, 1
-;final_project.c,39 :: 		}
-	GOTO       L_draw_diagonal_line10
-L_draw_diagonal_line11:
-;final_project.c,40 :: 		}
-L_end_draw_diagonal_line:
-	RETURN
-; end of _draw_diagonal_line
-
-_read_input:
-
-;final_project.c,42 :: 		void read_input() {
-;final_project.c,44 :: 		}
-L_end_read_input:
-	RETURN
-; end of _read_input
+;final_project.c,36 :: 		void interrupt() {
+;final_project.c,38 :: 		if (INTCON & 0x04) {
+	BTFSS      INTCON+0, 2
+	GOTO       L_interrupt2
+;final_project.c,40 :: 		PORTC ^= 0x04;    // Bit-2 of PORTC
+	MOVLW      4
+	XORWF      PORTC+0, 1
+;final_project.c,43 :: 		INTCON &= ~0x04;
+	BCF        INTCON+0, 2
+;final_project.c,47 :: 		TMR0 = timer_value;
+	MOVF       _timer_value+0, 0
+	MOVWF      TMR0+0
+;final_project.c,48 :: 		}
+L_interrupt2:
+;final_project.c,49 :: 		}
+L_end_interrupt:
+L__interrupt9:
+	MOVF       ___savePCLATH+0, 0
+	MOVWF      PCLATH+0
+	SWAPF      ___saveSTATUS+0, 0
+	MOVWF      STATUS+0
+	SWAPF      R15+0, 1
+	SWAPF      R15+0, 0
+	RETFIE
+; end of _interrupt
 
 _main:
 
-;final_project.c,46 :: 		void main() {
-;final_project.c,47 :: 		TRISC = 0xC1;                // pin c7, c6 and c0 are inputs,  rest are outputs 1100 0001
-	MOVLW      193
-	MOVWF      TRISC+0
-;final_project.c,48 :: 		PORTC = 0x00;                // initialize PORT C
+;final_project.c,51 :: 		void main() {
+;final_project.c,53 :: 		TRISC = 0x00;        // All PORTC pins as output
+	CLRF       TRISC+0
+;final_project.c,54 :: 		PORTC = 0x00;        // Initialize PORTC to 0
 	CLRF       PORTC+0
-;final_project.c,49 :: 		ADCON1 = 0x06;               // configure all pins as digital, except for RA0 which might be used later
-	MOVLW      6
-	MOVWF      ADCON1+0
-;final_project.c,50 :: 		TRISE = 0xFF;                // configure PORRT E as inputs
-	MOVLW      255
-	MOVWF      TRISE+0
-;final_project.c,51 :: 		PORTE = 0x00;                // initialize PORT E
-	CLRF       PORTE+0
-;final_project.c,53 :: 		while(1) {
-L_main15:
-;final_project.c,55 :: 		if (PORTC & 0x80) config_word |= 0x20; // Set bit 5
-	BTFSS      PORTC+0, 7
-	GOTO       L_main17
-	BSF        _config_word+0, 5
-L_main17:
-;final_project.c,56 :: 		if (PORTC & 0x40) config_word |= 0x40; // Set bit 3
-	BTFSS      PORTC+0, 6
-	GOTO       L_main18
-	BSF        _config_word+0, 6
-L_main18:
-;final_project.c,57 :: 		if (PORTE & 0x01) config_word |= 0x01; // Set bit 0
-	BTFSS      PORTE+0, 0
-	GOTO       L_main19
-	BSF        _config_word+0, 0
-L_main19:
-;final_project.c,58 :: 		if (PORTE & 0x02) config_word |= 0x02; // Set bit 1
-	BTFSS      PORTE+0, 1
-	GOTO       L_main20
-	BSF        _config_word+0, 1
-L_main20:
-;final_project.c,59 :: 		if (PORTE & 0x04) config_word |= 0x04; // Set bit 2
-	BTFSS      PORTE+0, 2
-	GOTO       L_main21
-	BSF        _config_word+0, 2
-L_main21:
-;final_project.c,61 :: 		if (PORTC & 0x01) {                   // Button pressed
-	BTFSS      PORTC+0, 0
-	GOTO       L_main22
-;final_project.c,62 :: 		delay_ms(50);                      // Debouncing delay
-	MOVLW      130
-	MOVWF      R12+0
-	MOVLW      221
-	MOVWF      R13+0
-L_main23:
-	DECFSZ     R13+0, 1
-	GOTO       L_main23
-	DECFSZ     R12+0, 1
-	GOTO       L_main23
-	NOP
-	NOP
-;final_project.c,63 :: 		switch (config_word & 0x7) {      // 8 optoions as c6 and c7 are used to control the direction of the motors
-	MOVLW      7
-	ANDWF      _config_word+0, 0
-	MOVWF      FLOC__main+0
-	GOTO       L_main24
-;final_project.c,64 :: 		case 0b000:                   // nothing // TODO
-L_main26:
-;final_project.c,65 :: 		break;
-	GOTO       L_main25
-;final_project.c,67 :: 		case 0b001: draw_vertical_line(STEPS_FULL_ROTATION);     // E0
-L_main27:
-	MOVLW      200
-	MOVWF      FARG_draw_vertical_line_steps+0
-	CALL       _draw_vertical_line+0
-;final_project.c,68 :: 		break;
-	GOTO       L_main25
-;final_project.c,70 :: 		case 0b010: draw_vertical_line(STEPS_HALF_ROTATION);     // E1
-L_main28:
-	MOVLW      100
-	MOVWF      FARG_draw_vertical_line_steps+0
-	CALL       _draw_vertical_line+0
-;final_project.c,71 :: 		break;
-	GOTO       L_main25
-;final_project.c,73 :: 		case 0b011: draw_horizontal_line(STEPS_FULL_ROTATION);   // E1, E0
-L_main29:
-	MOVLW      200
-	MOVWF      FARG_draw_horizontal_line_steps+0
-	CALL       _draw_horizontal_line+0
-;final_project.c,74 :: 		break;
-	GOTO       L_main25
-;final_project.c,76 :: 		case 0b100: draw_horizontal_line(STEPS_HALF_ROTATION);   //  E2
-L_main30:
-	MOVLW      100
-	MOVWF      FARG_draw_horizontal_line_steps+0
-	CALL       _draw_horizontal_line+0
-;final_project.c,77 :: 		break;
-	GOTO       L_main25
-;final_project.c,79 :: 		case 0b101: draw_diagonal_line(STEPS_FULL_ROTATION);     // E2, E0
-L_main31:
-	MOVLW      200
-	MOVWF      FARG_draw_diagonal_line_steps+0
-	CALL       _draw_diagonal_line+0
-;final_project.c,80 :: 		break;
-	GOTO       L_main25
-;final_project.c,82 :: 		case 0b110: draw_diagonal_line(STEPS_HALF_ROTATION);     // E2, E1
-L_main32:
-	MOVLW      100
-	MOVWF      FARG_draw_diagonal_line_steps+0
-	CALL       _draw_diagonal_line+0
-;final_project.c,83 :: 		break;
-	GOTO       L_main25
-;final_project.c,85 :: 		case 0b111:  // E2, E1, E0  //TODO
-L_main33:
-;final_project.c,86 :: 		break;
-	GOTO       L_main25
-;final_project.c,87 :: 		}
-L_main24:
-	MOVF       FLOC__main+0, 0
-	XORLW      0
-	BTFSC      STATUS+0, 2
-	GOTO       L_main26
-	MOVF       FLOC__main+0, 0
-	XORLW      1
-	BTFSC      STATUS+0, 2
-	GOTO       L_main27
-	MOVF       FLOC__main+0, 0
-	XORLW      2
-	BTFSC      STATUS+0, 2
-	GOTO       L_main28
-	MOVF       FLOC__main+0, 0
-	XORLW      3
-	BTFSC      STATUS+0, 2
-	GOTO       L_main29
-	MOVF       FLOC__main+0, 0
-	XORLW      4
-	BTFSC      STATUS+0, 2
-	GOTO       L_main30
-	MOVF       FLOC__main+0, 0
-	XORLW      5
-	BTFSC      STATUS+0, 2
-	GOTO       L_main31
-	MOVF       FLOC__main+0, 0
-	XORLW      6
-	BTFSC      STATUS+0, 2
-	GOTO       L_main32
-	MOVF       FLOC__main+0, 0
-	XORLW      7
-	BTFSC      STATUS+0, 2
-	GOTO       L_main33
-L_main25:
-;final_project.c,88 :: 		config_word = 0;
-	CLRF       _config_word+0
-;final_project.c,89 :: 		while ((PORTC & 0x01) == 0x01); // Wait for button to be released
-L_main34:
+;final_project.c,57 :: 		ATD_init();          // Initialize ADC
+	CALL       _ATD_init+0
+;final_project.c,58 :: 		Lcd_Init();          // Initialize LCD
+	CALL       _Lcd_Init+0
+;final_project.c,59 :: 		Lcd_Cmd(_LCD_CLEAR);
 	MOVLW      1
-	ANDWF      PORTC+0, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORLW      1
-	BTFSS      STATUS+0, 2
-	GOTO       L_main35
-	GOTO       L_main34
-L_main35:
-;final_project.c,90 :: 		delay_ms(50);                // Debouncing delay after release
-	MOVLW      130
+	MOVWF      FARG_Lcd_Cmd_out_char+0
+	CALL       _Lcd_Cmd+0
+;final_project.c,60 :: 		Lcd_Cmd(_LCD_CURSOR_OFF);
+	MOVLW      12
+	MOVWF      FARG_Lcd_Cmd_out_char+0
+	CALL       _Lcd_Cmd+0
+;final_project.c,65 :: 		OPTION_REG = 0x05;
+	MOVLW      5
+	MOVWF      OPTION_REG+0
+;final_project.c,68 :: 		TMR0   = 0;
+	CLRF       TMR0+0
+;final_project.c,69 :: 		INTCON &= ~0x04;     // Clear T0IF
+	BCF        INTCON+0, 2
+;final_project.c,72 :: 		INTCON |= 0x20;      // T0IE
+	BSF        INTCON+0, 5
+;final_project.c,73 :: 		INTCON |= 0x80;      // GIE
+	BSF        INTCON+0, 7
+;final_project.c,75 :: 		while (1) {
+L_main3:
+;final_project.c,77 :: 		analog_value = ATD_read();
+	CALL       _ATD_read+0
+	MOVF       R0+0, 0
+	MOVWF      _analog_value+0
+	MOVF       R0+1, 0
+	MOVWF      _analog_value+1
+;final_project.c,82 :: 		timer_value = (analog_value >> 2);  // simple approach: 0..1023 => 0..255
+	MOVF       R0+0, 0
+	MOVWF      R2+0
+	MOVF       R0+1, 0
+	MOVWF      R2+1
+	RRF        R2+1, 1
+	RRF        R2+0, 1
+	BCF        R2+1, 7
+	RRF        R2+1, 1
+	RRF        R2+0, 1
+	BCF        R2+1, 7
+	MOVF       R2+0, 0
+	MOVWF      _timer_value+0
+;final_project.c,85 :: 		IntToStr(timer_value, print_string);
+	MOVF       R2+0, 0
+	MOVWF      FARG_IntToStr_input+0
+	CLRF       FARG_IntToStr_input+1
+	MOVLW      _print_string+0
+	MOVWF      FARG_IntToStr_output+0
+	CALL       _IntToStr+0
+;final_project.c,87 :: 		Lcd_Out(1, 1, "Timer Reload:");
+	MOVLW      1
+	MOVWF      FARG_Lcd_Out_row+0
+	MOVLW      1
+	MOVWF      FARG_Lcd_Out_column+0
+	MOVLW      ?lstr1_final_project+0
+	MOVWF      FARG_Lcd_Out_text+0
+	CALL       _Lcd_Out+0
+;final_project.c,88 :: 		Lcd_Out(2, 1, print_string);
+	MOVLW      2
+	MOVWF      FARG_Lcd_Out_row+0
+	MOVLW      1
+	MOVWF      FARG_Lcd_Out_column+0
+	MOVLW      _print_string+0
+	MOVWF      FARG_Lcd_Out_text+0
+	CALL       _Lcd_Out+0
+;final_project.c,90 :: 		Delay_ms(500);   // Slow refresh to observe changes on LCD
+	MOVLW      6
+	MOVWF      R11+0
+	MOVLW      19
 	MOVWF      R12+0
-	MOVLW      221
+	MOVLW      173
 	MOVWF      R13+0
-L_main36:
+L_main5:
 	DECFSZ     R13+0, 1
-	GOTO       L_main36
+	GOTO       L_main5
 	DECFSZ     R12+0, 1
-	GOTO       L_main36
+	GOTO       L_main5
+	DECFSZ     R11+0, 1
+	GOTO       L_main5
 	NOP
 	NOP
+;final_project.c,91 :: 		}
+	GOTO       L_main3
 ;final_project.c,92 :: 		}
-L_main22:
-;final_project.c,93 :: 		}
-	GOTO       L_main15
-;final_project.c,94 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main

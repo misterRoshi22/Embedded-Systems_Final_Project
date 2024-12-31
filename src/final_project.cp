@@ -1,95 +1,93 @@
 #line 1 "C:/Users/20210383/Desktop/project/src/final_project.c"
 
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D4 at RB0_bit;
+sbit LCD_D5 at RB1_bit;
+sbit LCD_D6 at RB2_bit;
+sbit LCD_D7 at RB3_bit;
+
+sbit LCD_RS_Direction at TRISB4_bit;
+sbit LCD_EN_Direction at TRISB5_bit;
+sbit LCD_D4_Direction at TRISB0_bit;
+sbit LCD_D5_Direction at TRISB1_bit;
+sbit LCD_D6_Direction at TRISB2_bit;
+sbit LCD_D7_Direction at TRISB3_bit;
 
 
+unsigned int analog_value;
+unsigned char timer_value;
+char print_string[7];
 
 
-
-unsigned char direction_1 = 0;
-unsigned char direction_2 = 0;
-unsigned char i;
-const unsigned STEP_MOTOR_SPEED = 2;
-const unsigned STEPS_FULL_ROTATION = 200;
-const unsigned STEPS_HALF_ROTATION = 100;
-unsigned char config_word;
-
-void draw_horizontal_line(unsigned char steps) {
- for (i = 0; i < steps; i++) {
- PORTC |= 0x04;
- Delay_ms(STEP_MOTOR_SPEED);
- PORTC &= 0xFB;
- Delay_ms(STEP_MOTOR_SPEED);
- }
+void ATD_init(void) {
+ ADCON0 = 0x41;
+ ADCON1 = 0xCE;
+ TRISA = 0x01;
 }
 
-void draw_vertical_line(unsigned char steps) {
- for(i = 0; i < steps; i++) {
- PORTC |= 0x08;
- Delay_ms(STEP_MOTOR_SPEED);
- PORTC &= 0xF7;
- DElay_ms(STEP_MOTOR_SPEED);
- }
+
+unsigned int ATD_read(void) {
+ ADCON0 |= 0x04;
+ while (ADCON0 & 0x04);
+ return ((ADRESH << 8) | ADRESL);
 }
 
-void draw_diagonal_line(unsigned char steps) {
- for(i = 0; i < steps; i++) {
- PORTC |= 0x0C;
- Delay_ms(STEP_MOTOR_SPEED);
- PORTC &= 0xF3;
- Delay_ms(STEP_MOTOR_SPEED);
+
+void interrupt() {
+
+ if (INTCON & 0x04) {
+
+ PORTC ^= 0x04;
+
+
+ INTCON &= ~0x04;
+
+
+
+ TMR0 = timer_value;
  }
-}
-
-void read_input() {
-
 }
 
 void main() {
- TRISC = 0xC1;
+
+ TRISC = 0x00;
  PORTC = 0x00;
- ADCON1 = 0x06;
- TRISE = 0xFF;
- PORTE = 0x00;
 
- while(1) {
 
- if (PORTC & 0x80) config_word |= 0x20;
- if (PORTC & 0x40) config_word |= 0x40;
- if (PORTE & 0x01) config_word |= 0x01;
- if (PORTE & 0x02) config_word |= 0x02;
- if (PORTE & 0x04) config_word |= 0x04;
+ ATD_init();
+ Lcd_Init();
+ Lcd_Cmd(_LCD_CLEAR);
+ Lcd_Cmd(_LCD_CURSOR_OFF);
 
- if (PORTC & 0x01) {
- delay_ms(50);
- switch (config_word & 0x7) {
- case 0b000:
- break;
 
- case 0b001: draw_vertical_line(STEPS_FULL_ROTATION);
- break;
 
- case 0b010: draw_vertical_line(STEPS_HALF_ROTATION);
- break;
 
- case 0b011: draw_horizontal_line(STEPS_FULL_ROTATION);
- break;
+ OPTION_REG = 0x05;
 
- case 0b100: draw_horizontal_line(STEPS_HALF_ROTATION);
- break;
 
- case 0b101: draw_diagonal_line(STEPS_FULL_ROTATION);
- break;
+ TMR0 = 0;
+ INTCON &= ~0x04;
 
- case 0b110: draw_diagonal_line(STEPS_HALF_ROTATION);
- break;
 
- case 0b111:
- break;
- }
- config_word = 0;
- while ((PORTC & 0x01) == 0x01);
- delay_ms(50);
+ INTCON |= 0x20;
+ INTCON |= 0x80;
 
- }
+ while (1) {
+
+ analog_value = ATD_read();
+
+
+
+
+ timer_value = (analog_value >> 2);
+
+
+ IntToStr(timer_value, print_string);
+
+ Lcd_Out(1, 1, "Timer Reload:");
+ Lcd_Out(2, 1, print_string);
+
+ Delay_ms(500);
  }
 }
