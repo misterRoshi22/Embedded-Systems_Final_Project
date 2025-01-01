@@ -1,11 +1,11 @@
-#line 1 "C:/Users/20210383/Desktop/project/src/final_project.c"
-#line 1 "c:/users/20210383/desktop/project/src/../include/atd.h"
+#line 1 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
+#line 1 "c:/users/shaba/onedrive/desktop/uni/embedded systems/embedded-systems_final_project/src/../include/atd.h"
 
 
 
 void ATD_init(void);
 unsigned int ATD_read(unsigned char channel);
-#line 1 "c:/users/20210383/desktop/project/src/../include/lcd_config.h"
+#line 1 "c:/users/shaba/onedrive/desktop/uni/embedded systems/embedded-systems_final_project/src/../include/lcd_config.h"
 
 sbit LCD_RS at RB4_bit;
 sbit LCD_EN at RB5_bit;
@@ -20,7 +20,7 @@ sbit LCD_D4_Direction at TRISB0_bit;
 sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D7_Direction at TRISB3_bit;
-#line 1 "c:/users/20210383/desktop/project/src/../include/draw_letters.h"
+#line 1 "c:/users/shaba/onedrive/desktop/uni/embedded systems/embedded-systems_final_project/src/../include/draw_letters.h"
 
 
 
@@ -31,7 +31,7 @@ void draw_h(void);
 void draw_l(void);
 void move_next_letter(void);
 void enter_new_line(void);
-#line 6 "C:/Users/20210383/Desktop/project/src/final_project.c"
+#line 6 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
 unsigned int analog_value;
 unsigned char timer_value;
 char print_string[7];
@@ -135,7 +135,7 @@ void main(void) {
  Lcd_Out(2, 1, print_j);
 
  }
-#line 119 "C:/Users/20210383/Desktop/project/src/final_project.c"
+#line 119 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
  }
 
 

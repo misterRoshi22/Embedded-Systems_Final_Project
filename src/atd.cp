@@ -1,11 +1,11 @@
-#line 1 "C:/Users/20210383/Desktop/project/src/atd.c"
-#line 1 "c:/users/20210383/desktop/project/src/../include/atd.h"
+#line 1 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/atd.c"
+#line 1 "c:/users/shaba/onedrive/desktop/uni/embedded systems/embedded-systems_final_project/src/../include/atd.h"
 
 
 
 void ATD_init(void);
 unsigned int ATD_read(unsigned char channel);
-#line 4 "C:/Users/20210383/Desktop/project/src/atd.c"
+#line 4 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/atd.c"
 void ATD_init(void) {
  ADCON0 = 0x41;
  ADCON1 = 0xCE;
