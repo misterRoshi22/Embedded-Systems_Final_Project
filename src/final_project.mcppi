@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=..\include\draw_letters.h
+Value=final_project.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -33,12 +33,14 @@ Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=final_project.c
-File1=..\include\draw_base.h
-File2=..\include\atd.h
+File1=draw_letters.c
+File2=draw_base.c
 File3=..\include\draw_letters.h
-File4=draw_letters.c
-File5=draw_base.c
-Count=6
+File4=..\include\atd.h
+File5=..\include\draw_base.h
+File6=..\include\lcd_config.h
+File7=atd.c
+Count=8
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -68,4 +70,4 @@ Count=1
 1=System Libraries
 30=Conversions
 216=Lcd
-Count=4
+Count=5

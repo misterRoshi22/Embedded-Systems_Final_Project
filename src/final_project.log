@@ -4,7 +4,7 @@ diagnostics: 0	122	Compilation Started	atd.h
 diagnostics: 122	123	Compiled Successfully	final_project.c
 diagnostics: 0	122	Compilation Started	atd.h
 diagnostics: 20	123	Compiled Successfully	atd.c
-diagnostics: 0	127	All files Compiled in 94 ms	 
+diagnostics: 0	127	All files Compiled in 63 ms	 
 error: 0	360	Unresolved extern 'draw_h'	final_project.c
 error: 0	360	Unresolved extern 'draw_h'	final_project.c
 error: 0	360	Unresolved extern 'move_next_letter'	final_project.c
@@ -15,4 +15,4 @@ error: 0	360	Unresolved extern 'draw_l'	final_project.c
 error: 0	360	Unresolved extern 'draw_l'	final_project.c
 error: 0	360	Unresolved extern 'enter_new_line'	final_project.c
 error: 0	360	Unresolved extern 'enter_new_line'	final_project.c
-error: 0	102	Finished (with errors): 01 Jan 2025, 21:15:34	final_project.mcppi
+error: 0	102	Finished (with errors): 01 Jan 2025, 21:19:11	final_project.mcppi
