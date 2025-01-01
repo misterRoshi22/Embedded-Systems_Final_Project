@@ -56,7 +56,7 @@ adon
 adon_bit
 adresh
 adresl
-angle
+analog_value
 atd_init
 atd_read
 b0
@@ -84,6 +84,8 @@ bytetostr
 bytetostrwithzeros
 c
 c_bit
+c_i
+c_j
 c1inv
 c1inv_bit
 c1out
@@ -247,7 +249,7 @@ go_done
 go_done_bit
 go_not_done
 go_not_done_bit
-hl
+i
 ibf
 ibf_bit
 ibf_trise_bit
@@ -271,7 +273,7 @@ inttostr
 inttostrwithzeros
 irp
 irp_bit
-k
+j
 lcd_chr
 lcd_chr_cp
 lcd_cmd
@@ -312,8 +314,6 @@ mul_32x32_s
 mul_32x32_u
 mul_8x8_s
 mul_8x8_u
-myscaledvoltage
-mysevenseg
 not_a
 not_a_bit
 not_address
@@ -378,7 +378,9 @@ portc
 portd
 porte
 pr2
-print_angle
+print_i
+print_j
+print_string
 ps0
 ps0_bit
 ps1
@@ -607,6 +609,9 @@ t2ckps0_bit
 t2ckps1
 t2ckps1_bit
 t2con
+timer_value
+timer0_init
+timer1_init
 tmr0
 tmr0ie
 tmr0ie_bit
@@ -728,6 +733,7 @@ txreg
 txsta
 ua
 ua_bit
+update_lcd
 vdelay_advanced_ms
 vdelay_ms
 w

@@ -1,105 +1,122 @@
-// LCD module connections
-sbit LCD_RS at RB4_bit;
-sbit LCD_EN at RB5_bit;
-sbit LCD_D4 at RB0_bit;
-sbit LCD_D5 at RB1_bit;
-sbit LCD_D6 at RB2_bit;
-sbit LCD_D7 at RB3_bit;
+#include "../include/atd.h"
+#include "../include/lcd_config.h"
+#include "../include/draw_letters.h"
 
-sbit LCD_RS_Direction at TRISB4_bit;
-sbit LCD_EN_Direction at TRISB5_bit;
-sbit LCD_D4_Direction at TRISB0_bit;
-sbit LCD_D5_Direction at TRISB1_bit;
-sbit LCD_D6_Direction at TRISB2_bit;
-sbit LCD_D7_Direction at TRISB3_bit;
+// Variables
+unsigned int analog_value;
+unsigned char timer_value;
+char print_string[7];
+unsigned int i, j;
+unsigned char c_i, c_j;
+char print_i[7], print_j[7];
+unsigned char update_lcd = 0;
 
-void ATD_init(void);
-unsigned int ATD_read(void);
-unsigned int k;
-unsigned char myscaledVoltage;
-unsigned char mysevenseg[10]={0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
+// Function to initialize Timer0
+void Timer0_init(void) {
+    OPTION_REG = 0x05;  // Prescaler 1:64, Timer mode, internal clock (Fosc/4)
+    TMR0 = 0xf0;           // Clear Timer0
+    INTCON &= ~0x04;    // Clear Timer0 overflow flag (T0IF)
+    INTCON |= 0x20;     // Enable Timer0 interrupt (T0IE)
+}
 
-unsigned int angle;                                                  // Count value of high - pertaining to the angle
-unsigned char HL;                                                    // High Low
+// Function to initialize Timer1
+void Timer1_init(void) {
+    T1CON = 0x31;       // Timer1 enabled, Prescaler 1:8, internal clock (Fosc/4)
+    TMR1H = 0xFF;          // Clear Timer1 high byte
+    TMR1L = 0x80;          // Clear Timer1 low byte
+    PIR1 &= ~0x01;      // Clear Timer1 overflow flag (TMR1IF)
+    PIE1 |= 0x01;       // Enable Timer1 interrupt (TMR1IE)
+}
+
+void interrupt(void) {
+    // Handle Timer0 interrupt
+    if (INTCON & 0x04) {       // Check if T0IF is set
+        PORTC ^= 0x04;         // Toggle RC2 (Example action for Timer0)
+        INTCON &= ~0x04;       // Clear T0IF
+        TMR0 = 0xF0;              // Reload Timer0 if necessary
+        i++;
+    }
+    if(i == 100) {
+        update_lcd = 1;  // Set flag for LCD update
+        c_i++;
+        i = 0;
+    }
+
+    // Handle Timer1 interrupt
+    if (PIR1 & 0x01) {         // Check if TMR1IF is set
+        PORTC ^= 0x08;         // Toggle RC3 (Example action for Timer1)
+        PIR1 &= ~0x01;         // Clear TMR1IF
+        TMR1H = 0xFF;          // Reload Timer1 high byte if necessary
+        TMR1L = 0x80;             // Reload Timer1 low byte if necessary
+        j++;
+    }
+    if(j == 100) {
+        update_lcd = 1;  // Set flag for LCD update
+        c_j++;
+        j = 0;
+    }
+
+}
+
+// Main Function
+void main(void) {
+    // Initialize I/O
+    TRISC = 0x00;  // Set all PORTC pins as output
+    PORTC = 0xC0;  // Clear PORTC, set enables to 0 active low
+    ATD_init();
+
+    //FOR TESTING PURPOSES ONLY
+    PORTD = 0xFF;
+
+    // Initialize Timers
+    Timer0_init();  // Initialize Timer0
+    Timer1_init();  // Initialize Timer1
+
+    Lcd_Init();
+    Lcd_Cmd(_LCD_CURSOR_OFF);
+    Lcd_Cmd(_LCD_CLEAR);
+    Lcd_Out(1,1,"Hello!!");
+
+    // Enable global interrupts
+    INTCON |= 0x80; // Global Interrupt Enable (GIE)
+    INTCON |= 0x40; // Peripheral Interrupt Enable (PIE)
+    i = 0;
+    j = 0;
+    c_i = 0;
+    c_j = 0;
+
+    draw_h();
+    move_next_letter();
+    draw_e();
+    move_next_letter();
+    draw_l();
+    move_next_letter();
+    draw_l();
+    enter_new_line();
 
 
-void interrupt(void){
+     while (1) {
+        // Check if LCD update is required
+        if (update_lcd) {
+            update_lcd = 0;  // Clear the flag
+            Lcd_Cmd(_LCD_CLEAR);          // Clear LCD
+            IntToStr(c_i, print_i);       // Convert values to strings
+            IntToStr(c_j, print_j);
+            Lcd_Out(1, 1, print_i);       // Display values
+            Lcd_Out(2, 1, print_j);
 
-       if(PIR1 & 0x04){                                           // CCP1 interrupt
-             if(HL){                                // high
-                       CCPR1H = angle >> 8;
-                       CCPR1L = angle;
-                       HL = 0;                      // next time low
-                       CCP1CON = 0x09;              // compare mode, clear output on match
-                       TMR1H = 0;
-                       TMR1L = 0;
-             }
-             else{                                          //low
-                       CCPR1H = (40000 - angle) >> 8;       // 40000 counts correspond to 20ms
-                       CCPR1L = (40000 - angle);
-                       CCP1CON = 0x08;             // compare mode, set output on match
-                       HL = 1;                     //next time High
-                       TMR1H = 0;
-                       TMR1L = 0;
-             }
-
-             PIR1 = PIR1&0xFB;
-       }
-
-
- }
-char print_angle[7];
-
-void main() {
-        TRISC = 0x00;           // PWM output at CCP1(RC2)
-        PORTC = 0x00;
-        TRISD = 0x00;           // for 7 seg display
-        PORTD = 0x00;
-        ATD_init();
-        PORTA = 0x08;          // Enable 4th seven segment display
-        TMR1H = 0;
-        TMR1L = 0;
-
-        HL = 1;                // start high
-        CCP1CON = 0x08;        // Compare mode, set output on match
-
-        T1CON = 0x01;          // TMR1 On Fosc/4 (inc 0.5uS) with 0 prescaler (TMR1 overflow after 0xFFFF counts == 65535)==> 32.767ms
-
-        INTCON = 0xC0;         // Enable GIE and peripheral interrupts
-        PIE1 = PIE1|0x04;      // Enable CCP1 interrupts
-        CCPR1H = 2000>>8;      // Value preset in a program to compare the TMR1H value to            - 1ms
-        CCPR1L = 2000;         // Value preset in a program to compare the TMR1L value to
-
-        Lcd_Init();               // Initialize LCD
-        Lcd_Cmd(_LCD_CLEAR);      // Clear display
-        Lcd_Cmd(_LCD_CURSOR_OFF);
-
-
-        while(1){
-              k = ATD_read();  // 0-1023
-              myscaledVoltage = ((k*5)/1023); // 0-5
-              PORTD = mysevenseg[myscaledVoltage];
-
-              k = k>>2;  // divided by 4 ==> 0-255
-              //angle = 0.5ms -> 1000 counts; 1.75ms -> 3500 counts
-              angle = 1000 + ((k*25)/2.55);     //angle= 1000 + ((k*2500)/255); 1000count=500uS to 3500count =1750us
-              if(angle>3500) angle = 3500;      // 1.75ms
-              if(angle<1000) angle = 1000;      // 0.5ms
-              IntToStr(angle, print_angle);
-              Lcd_Out(1,1,"angle: ");
-              Lcd_Out(1, 8, print_angle);
         }
 
-}
+  /*if(PORTD & 0x01) draw_right_x();
+          if(PORTD & 0x02) draw_left_x();
+          if(PORTD & 0x04) draw_down_y();
+          if(PORTD & 0x08) draw_up_y();
+          if(PORTD & 0x10) draw_e();
+          if(PORTD & 0x20) draw_a();
+          if(PORTD & 0x40) draw_diag_down_right();*/
+          
+
+    }
 
 
-void ATD_init(void){
-      ADCON0=0x41;           // ON, Channel 0, Fosc/16== 500KHz, Dont Go
-      ADCON1=0xCE;           // RA0 Analog, others are Digital, Right Allignment,
-      TRISA=0x01;
-}
-unsigned int ATD_read(void){
-      ADCON0=ADCON0 | 0x04;  // GO
-      while(ADCON0&0x04);    // wait until DONE
-      return (ADRESH<<8)|ADRESL;
 }

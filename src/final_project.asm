@@ -1,4 +1,43 @@
 
+_Timer0_init:
+
+;final_project.c,15 :: 		void Timer0_init(void) {
+;final_project.c,16 :: 		OPTION_REG = 0x05;  // Prescaler 1:64, Timer mode, internal clock (Fosc/4)
+	MOVLW      5
+	MOVWF      OPTION_REG+0
+;final_project.c,17 :: 		TMR0 = 0xf0;           // Clear Timer0
+	MOVLW      240
+	MOVWF      TMR0+0
+;final_project.c,18 :: 		INTCON &= ~0x04;    // Clear Timer0 overflow flag (T0IF)
+	BCF        INTCON+0, 2
+;final_project.c,19 :: 		INTCON |= 0x20;     // Enable Timer0 interrupt (T0IE)
+	BSF        INTCON+0, 5
+;final_project.c,20 :: 		}
+L_end_Timer0_init:
+	RETURN
+; end of _Timer0_init
+
+_Timer1_init:
+
+;final_project.c,23 :: 		void Timer1_init(void) {
+;final_project.c,24 :: 		T1CON = 0x31;       // Timer1 enabled, Prescaler 1:8, internal clock (Fosc/4)
+	MOVLW      49
+	MOVWF      T1CON+0
+;final_project.c,25 :: 		TMR1H = 0xFF;          // Clear Timer1 high byte
+	MOVLW      255
+	MOVWF      TMR1H+0
+;final_project.c,26 :: 		TMR1L = 0x80;          // Clear Timer1 low byte
+	MOVLW      128
+	MOVWF      TMR1L+0
+;final_project.c,27 :: 		PIR1 &= ~0x01;      // Clear Timer1 overflow flag (TMR1IF)
+	BCF        PIR1+0, 0
+;final_project.c,28 :: 		PIE1 |= 0x01;       // Enable Timer1 interrupt (TMR1IE)
+	BSF        PIE1+0, 0
+;final_project.c,29 :: 		}
+L_end_Timer1_init:
+	RETURN
+; end of _Timer1_init
+
 _interrupt:
 	MOVWF      R15+0
 	SWAPF      STATUS+0, 0
@@ -8,70 +47,85 @@ _interrupt:
 	MOVWF      ___savePCLATH+0
 	CLRF       PCLATH+0
 
-;final_project.c,26 :: 		void interrupt(void){
-;final_project.c,28 :: 		if(PIR1 & 0x04){                                           // CCP1 interrupt
-	BTFSS      PIR1+0, 2
+;final_project.c,31 :: 		void interrupt(void) {
+;final_project.c,33 :: 		if (INTCON & 0x04) {       // Check if T0IF is set
+	BTFSS      INTCON+0, 2
 	GOTO       L_interrupt0
-;final_project.c,29 :: 		if(HL){                                // high
-	MOVF       _HL+0, 0
+;final_project.c,34 :: 		PORTC ^= 0x04;         // Toggle RC2 (Example action for Timer0)
+	MOVLW      4
+	XORWF      PORTC+0, 1
+;final_project.c,35 :: 		INTCON &= ~0x04;       // Clear T0IF
+	BCF        INTCON+0, 2
+;final_project.c,36 :: 		TMR0 = 0xF0;              // Reload Timer0 if necessary
+	MOVLW      240
+	MOVWF      TMR0+0
+;final_project.c,37 :: 		i++;
+	INCF       _i+0, 1
 	BTFSC      STATUS+0, 2
-	GOTO       L_interrupt1
-;final_project.c,30 :: 		CCPR1H = angle >> 8;
-	MOVF       _angle+1, 0
-	MOVWF      R0+0
-	CLRF       R0+1
-	MOVF       R0+0, 0
-	MOVWF      CCPR1H+0
-;final_project.c,31 :: 		CCPR1L = angle;
-	MOVF       _angle+0, 0
-	MOVWF      CCPR1L+0
-;final_project.c,32 :: 		HL = 0;                      // next time low
-	CLRF       _HL+0
-;final_project.c,33 :: 		CCP1CON = 0x09;              // compare mode, clear output on match
-	MOVLW      9
-	MOVWF      CCP1CON+0
-;final_project.c,34 :: 		TMR1H = 0;
-	CLRF       TMR1H+0
-;final_project.c,35 :: 		TMR1L = 0;
-	CLRF       TMR1L+0
-;final_project.c,36 :: 		}
-	GOTO       L_interrupt2
-L_interrupt1:
-;final_project.c,38 :: 		CCPR1H = (40000 - angle) >> 8;       // 40000 counts correspond to 20ms
-	MOVF       _angle+0, 0
-	SUBLW      64
-	MOVWF      R3+0
-	MOVF       _angle+1, 0
-	BTFSS      STATUS+0, 0
-	ADDLW      1
-	SUBLW      156
-	MOVWF      R3+1
-	MOVF       R3+1, 0
-	MOVWF      R0+0
-	CLRF       R0+1
-	MOVF       R0+0, 0
-	MOVWF      CCPR1H+0
-;final_project.c,39 :: 		CCPR1L = (40000 - angle);
-	MOVF       R3+0, 0
-	MOVWF      CCPR1L+0
-;final_project.c,40 :: 		CCP1CON = 0x08;             // compare mode, set output on match
-	MOVLW      8
-	MOVWF      CCP1CON+0
-;final_project.c,41 :: 		HL = 1;                     //next time High
-	MOVLW      1
-	MOVWF      _HL+0
-;final_project.c,42 :: 		TMR1H = 0;
-	CLRF       TMR1H+0
-;final_project.c,43 :: 		TMR1L = 0;
-	CLRF       TMR1L+0
-;final_project.c,44 :: 		}
-L_interrupt2:
-;final_project.c,46 :: 		PIR1 = PIR1&0xFB;
-	MOVLW      251
-	ANDWF      PIR1+0, 1
-;final_project.c,47 :: 		}
+	INCF       _i+1, 1
+;final_project.c,38 :: 		}
 L_interrupt0:
-;final_project.c,50 :: 		}
+;final_project.c,39 :: 		if(i == 100) {
+	MOVLW      0
+	XORWF      _i+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__interrupt11
+	MOVLW      100
+	XORWF      _i+0, 0
+L__interrupt11:
+	BTFSS      STATUS+0, 2
+	GOTO       L_interrupt1
+;final_project.c,40 :: 		update_lcd = 1;  // Set flag for LCD update
+	MOVLW      1
+	MOVWF      _update_lcd+0
+;final_project.c,41 :: 		c_i++;
+	INCF       _c_i+0, 1
+;final_project.c,42 :: 		i = 0;
+	CLRF       _i+0
+	CLRF       _i+1
+;final_project.c,43 :: 		}
+L_interrupt1:
+;final_project.c,46 :: 		if (PIR1 & 0x01) {         // Check if TMR1IF is set
+	BTFSS      PIR1+0, 0
+	GOTO       L_interrupt2
+;final_project.c,47 :: 		PORTC ^= 0x08;         // Toggle RC3 (Example action for Timer1)
+	MOVLW      8
+	XORWF      PORTC+0, 1
+;final_project.c,48 :: 		PIR1 &= ~0x01;         // Clear TMR1IF
+	BCF        PIR1+0, 0
+;final_project.c,49 :: 		TMR1H = 0xFF;          // Reload Timer1 high byte if necessary
+	MOVLW      255
+	MOVWF      TMR1H+0
+;final_project.c,50 :: 		TMR1L = 0x80;             // Reload Timer1 low byte if necessary
+	MOVLW      128
+	MOVWF      TMR1L+0
+;final_project.c,51 :: 		j++;
+	INCF       _j+0, 1
+	BTFSC      STATUS+0, 2
+	INCF       _j+1, 1
+;final_project.c,52 :: 		}
+L_interrupt2:
+;final_project.c,53 :: 		if(j == 100) {
+	MOVLW      0
+	XORWF      _j+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__interrupt12
+	MOVLW      100
+	XORWF      _j+0, 0
+L__interrupt12:
+	BTFSS      STATUS+0, 2
+	GOTO       L_interrupt3
+;final_project.c,54 :: 		update_lcd = 1;  // Set flag for LCD update
+	MOVLW      1
+	MOVWF      _update_lcd+0
+;final_project.c,55 :: 		c_j++;
+	INCF       _c_j+0, 1
+;final_project.c,56 :: 		j = 0;
+	CLRF       _j+0
+	CLRF       _j+1
+;final_project.c,57 :: 		}
+L_interrupt3:
+;final_project.c,59 :: 		}
 L_end_interrupt:
 L__interrupt10:
 	MOVF       ___savePCLATH+0, 0
@@ -85,173 +139,32 @@ L__interrupt10:
 
 _main:
 
-;final_project.c,53 :: 		void main() {
-;final_project.c,54 :: 		TRISC = 0x00;           // PWM output at CCP1(RC2)
+;final_project.c,62 :: 		void main(void) {
+;final_project.c,64 :: 		TRISC = 0x00;  // Set all PORTC pins as output
 	CLRF       TRISC+0
-;final_project.c,55 :: 		PORTC = 0x00;
-	CLRF       PORTC+0
-;final_project.c,56 :: 		TRISD = 0x00;           // for 7 seg display
-	CLRF       TRISD+0
-;final_project.c,57 :: 		PORTD = 0x00;
-	CLRF       PORTD+0
-;final_project.c,58 :: 		ATD_init();
-	CALL       _ATD_init+0
-;final_project.c,59 :: 		PORTA = 0x08;          // Enable 4th seven segment display
-	MOVLW      8
-	MOVWF      PORTA+0
-;final_project.c,60 :: 		TMR1H = 0;
-	CLRF       TMR1H+0
-;final_project.c,61 :: 		TMR1L = 0;
-	CLRF       TMR1L+0
-;final_project.c,63 :: 		HL = 1;                // start high
-	MOVLW      1
-	MOVWF      _HL+0
-;final_project.c,64 :: 		CCP1CON = 0x08;        // Compare mode, set output on match
-	MOVLW      8
-	MOVWF      CCP1CON+0
-;final_project.c,66 :: 		T1CON = 0x01;          // TMR1 On Fosc/4 (inc 0.5uS) with 0 prescaler (TMR1 overflow after 0xFFFF counts == 65535)==> 32.767ms
-	MOVLW      1
-	MOVWF      T1CON+0
-;final_project.c,68 :: 		INTCON = 0xC0;         // Enable GIE and peripheral interrupts
+;final_project.c,65 :: 		PORTC = 0xC0;  // Clear PORTC, set enables to 0 active low
 	MOVLW      192
-	MOVWF      INTCON+0
-;final_project.c,69 :: 		PIE1 = PIE1|0x04;      // Enable CCP1 interrupts
-	BSF        PIE1+0, 2
-;final_project.c,70 :: 		CCPR1H = 2000>>8;      // Value preset in a program to compare the TMR1H value to            - 1ms
-	MOVLW      7
-	MOVWF      CCPR1H+0
-;final_project.c,71 :: 		CCPR1L = 2000;         // Value preset in a program to compare the TMR1L value to
-	MOVLW      208
-	MOVWF      CCPR1L+0
-;final_project.c,73 :: 		Lcd_Init();               // Initialize LCD
+	MOVWF      PORTC+0
+;final_project.c,66 :: 		ATD_init();
+	CALL       _ATD_init+0
+;final_project.c,69 :: 		PORTD = 0xFF;
+	MOVLW      255
+	MOVWF      PORTD+0
+;final_project.c,72 :: 		Timer0_init();  // Initialize Timer0
+	CALL       _Timer0_init+0
+;final_project.c,73 :: 		Timer1_init();  // Initialize Timer1
+	CALL       _Timer1_init+0
+;final_project.c,75 :: 		Lcd_Init();
 	CALL       _Lcd_Init+0
-;final_project.c,74 :: 		Lcd_Cmd(_LCD_CLEAR);      // Clear display
-	MOVLW      1
-	MOVWF      FARG_Lcd_Cmd_out_char+0
-	CALL       _Lcd_Cmd+0
-;final_project.c,75 :: 		Lcd_Cmd(_LCD_CURSOR_OFF);
+;final_project.c,76 :: 		Lcd_Cmd(_LCD_CURSOR_OFF);
 	MOVLW      12
 	MOVWF      FARG_Lcd_Cmd_out_char+0
 	CALL       _Lcd_Cmd+0
-;final_project.c,78 :: 		while(1){
-L_main3:
-;final_project.c,79 :: 		k = ATD_read();  // 0-1023
-	CALL       _ATD_read+0
-	MOVF       R0+0, 0
-	MOVWF      FLOC__main+0
-	MOVF       R0+1, 0
-	MOVWF      FLOC__main+1
-	MOVF       FLOC__main+0, 0
-	MOVWF      _k+0
-	MOVF       FLOC__main+1, 0
-	MOVWF      _k+1
-;final_project.c,80 :: 		myscaledVoltage = ((k*5)/1023); // 0-5
-	MOVF       FLOC__main+0, 0
-	MOVWF      R0+0
-	MOVF       FLOC__main+1, 0
-	MOVWF      R0+1
-	MOVLW      5
-	MOVWF      R4+0
-	MOVLW      0
-	MOVWF      R4+1
-	CALL       _Mul_16X16_U+0
-	MOVLW      255
-	MOVWF      R4+0
-	MOVLW      3
-	MOVWF      R4+1
-	CALL       _Div_16X16_U+0
-	MOVF       R0+0, 0
-	MOVWF      _myscaledVoltage+0
-;final_project.c,81 :: 		PORTD = mysevenseg[myscaledVoltage];
-	MOVF       R0+0, 0
-	ADDLW      _mysevenseg+0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      PORTD+0
-;final_project.c,83 :: 		k = k>>2;  // divided by 4 ==> 0-255
-	MOVF       FLOC__main+0, 0
-	MOVWF      R0+0
-	MOVF       FLOC__main+1, 0
-	MOVWF      R0+1
-	RRF        R0+1, 1
-	RRF        R0+0, 1
-	BCF        R0+1, 7
-	RRF        R0+1, 1
-	RRF        R0+0, 1
-	BCF        R0+1, 7
-	MOVF       R0+0, 0
-	MOVWF      _k+0
-	MOVF       R0+1, 0
-	MOVWF      _k+1
-;final_project.c,85 :: 		angle = 1000 + ((k*25)/2.55);     //angle= 1000 + ((k*2500)/255); 1000count=500uS to 3500count =1750us
-	MOVLW      25
-	MOVWF      R4+0
-	MOVLW      0
-	MOVWF      R4+1
-	CALL       _Mul_16X16_U+0
-	CALL       _word2double+0
-	MOVLW      51
-	MOVWF      R4+0
-	MOVLW      51
-	MOVWF      R4+1
-	MOVLW      35
-	MOVWF      R4+2
-	MOVLW      128
-	MOVWF      R4+3
-	CALL       _Div_32x32_FP+0
-	MOVLW      0
-	MOVWF      R4+0
-	MOVLW      0
-	MOVWF      R4+1
-	MOVLW      122
-	MOVWF      R4+2
-	MOVLW      136
-	MOVWF      R4+3
-	CALL       _Add_32x32_FP+0
-	CALL       _double2word+0
-	MOVF       R0+0, 0
-	MOVWF      _angle+0
-	MOVF       R0+1, 0
-	MOVWF      _angle+1
-;final_project.c,86 :: 		if(angle>3500) angle = 3500;      // 1.75ms
-	MOVF       R0+1, 0
-	SUBLW      13
-	BTFSS      STATUS+0, 2
-	GOTO       L__main12
-	MOVF       R0+0, 0
-	SUBLW      172
-L__main12:
-	BTFSC      STATUS+0, 0
-	GOTO       L_main5
-	MOVLW      172
-	MOVWF      _angle+0
-	MOVLW      13
-	MOVWF      _angle+1
-L_main5:
-;final_project.c,87 :: 		if(angle<1000) angle = 1000;      // 0.5ms
-	MOVLW      3
-	SUBWF      _angle+1, 0
-	BTFSS      STATUS+0, 2
-	GOTO       L__main13
-	MOVLW      232
-	SUBWF      _angle+0, 0
-L__main13:
-	BTFSC      STATUS+0, 0
-	GOTO       L_main6
-	MOVLW      232
-	MOVWF      _angle+0
-	MOVLW      3
-	MOVWF      _angle+1
-L_main6:
-;final_project.c,88 :: 		IntToStr(angle, print_angle);
-	MOVF       _angle+0, 0
-	MOVWF      FARG_IntToStr_input+0
-	MOVF       _angle+1, 0
-	MOVWF      FARG_IntToStr_input+1
-	MOVLW      _print_angle+0
-	MOVWF      FARG_IntToStr_output+0
-	CALL       _IntToStr+0
-;final_project.c,89 :: 		Lcd_Out(1,1,"angle: ");
+;final_project.c,77 :: 		Lcd_Cmd(_LCD_CLEAR);
+	MOVLW      1
+	MOVWF      FARG_Lcd_Cmd_out_char+0
+	CALL       _Lcd_Cmd+0
+;final_project.c,78 :: 		Lcd_Out(1,1,"Hello!!");
 	MOVLW      1
 	MOVWF      FARG_Lcd_Out_row+0
 	MOVLW      1
@@ -259,58 +172,83 @@ L_main6:
 	MOVLW      ?lstr1_final_project+0
 	MOVWF      FARG_Lcd_Out_text+0
 	CALL       _Lcd_Out+0
-;final_project.c,90 :: 		Lcd_Out(1, 8, print_angle);
+;final_project.c,81 :: 		INTCON |= 0x80; // Global Interrupt Enable (GIE)
+	BSF        INTCON+0, 7
+;final_project.c,82 :: 		INTCON |= 0x40; // Peripheral Interrupt Enable (PIE)
+	BSF        INTCON+0, 6
+;final_project.c,83 :: 		i = 0;
+	CLRF       _i+0
+	CLRF       _i+1
+;final_project.c,84 :: 		j = 0;
+	CLRF       _j+0
+	CLRF       _j+1
+;final_project.c,85 :: 		c_i = 0;
+	CLRF       _c_i+0
+;final_project.c,86 :: 		c_j = 0;
+	CLRF       _c_j+0
+;final_project.c,88 :: 		draw_h();
+	CALL       _draw_h+0
+;final_project.c,89 :: 		move_next_letter();
+	CALL       _move_next_letter+0
+;final_project.c,90 :: 		draw_e();
+	CALL       _draw_e+0
+;final_project.c,91 :: 		move_next_letter();
+	CALL       _move_next_letter+0
+;final_project.c,92 :: 		draw_l();
+	CALL       _draw_l+0
+;final_project.c,93 :: 		move_next_letter();
+	CALL       _move_next_letter+0
+;final_project.c,94 :: 		draw_l();
+	CALL       _draw_l+0
+;final_project.c,95 :: 		enter_new_line();
+	CALL       _enter_new_line+0
+;final_project.c,98 :: 		while (1) {
+L_main4:
+;final_project.c,100 :: 		if (update_lcd) {
+	MOVF       _update_lcd+0, 0
+	BTFSC      STATUS+0, 2
+	GOTO       L_main6
+;final_project.c,101 :: 		update_lcd = 0;  // Clear the flag
+	CLRF       _update_lcd+0
+;final_project.c,102 :: 		Lcd_Cmd(_LCD_CLEAR);          // Clear LCD
+	MOVLW      1
+	MOVWF      FARG_Lcd_Cmd_out_char+0
+	CALL       _Lcd_Cmd+0
+;final_project.c,103 :: 		IntToStr(c_i, print_i);       // Convert values to strings
+	MOVF       _c_i+0, 0
+	MOVWF      FARG_IntToStr_input+0
+	CLRF       FARG_IntToStr_input+1
+	MOVLW      _print_i+0
+	MOVWF      FARG_IntToStr_output+0
+	CALL       _IntToStr+0
+;final_project.c,104 :: 		IntToStr(c_j, print_j);
+	MOVF       _c_j+0, 0
+	MOVWF      FARG_IntToStr_input+0
+	CLRF       FARG_IntToStr_input+1
+	MOVLW      _print_j+0
+	MOVWF      FARG_IntToStr_output+0
+	CALL       _IntToStr+0
+;final_project.c,105 :: 		Lcd_Out(1, 1, print_i);       // Display values
 	MOVLW      1
 	MOVWF      FARG_Lcd_Out_row+0
-	MOVLW      8
+	MOVLW      1
 	MOVWF      FARG_Lcd_Out_column+0
-	MOVLW      _print_angle+0
+	MOVLW      _print_i+0
 	MOVWF      FARG_Lcd_Out_text+0
 	CALL       _Lcd_Out+0
-;final_project.c,91 :: 		}
-	GOTO       L_main3
-;final_project.c,93 :: 		}
+;final_project.c,106 :: 		Lcd_Out(2, 1, print_j);
+	MOVLW      2
+	MOVWF      FARG_Lcd_Out_row+0
+	MOVLW      1
+	MOVWF      FARG_Lcd_Out_column+0
+	MOVLW      _print_j+0
+	MOVWF      FARG_Lcd_Out_text+0
+	CALL       _Lcd_Out+0
+;final_project.c,108 :: 		}
+L_main6:
+;final_project.c,119 :: 		}
+	GOTO       L_main4
+;final_project.c,122 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main
-
-_ATD_init:
-
-;final_project.c,96 :: 		void ATD_init(void){
-;final_project.c,97 :: 		ADCON0=0x41;           // ON, Channel 0, Fosc/16== 500KHz, Dont Go
-	MOVLW      65
-	MOVWF      ADCON0+0
-;final_project.c,98 :: 		ADCON1=0xCE;           // RA0 Analog, others are Digital, Right Allignment,
-	MOVLW      206
-	MOVWF      ADCON1+0
-;final_project.c,99 :: 		TRISA=0x01;
-	MOVLW      1
-	MOVWF      TRISA+0
-;final_project.c,100 :: 		}
-L_end_ATD_init:
-	RETURN
-; end of _ATD_init
-
-_ATD_read:
-
-;final_project.c,101 :: 		unsigned int ATD_read(void){
-;final_project.c,102 :: 		ADCON0=ADCON0 | 0x04;  // GO
-	BSF        ADCON0+0, 2
-;final_project.c,103 :: 		while(ADCON0&0x04);    // wait until DONE
-L_ATD_read7:
-	BTFSS      ADCON0+0, 2
-	GOTO       L_ATD_read8
-	GOTO       L_ATD_read7
-L_ATD_read8:
-;final_project.c,104 :: 		return (ADRESH<<8)|ADRESL;
-	MOVF       ADRESH+0, 0
-	MOVWF      R0+1
-	CLRF       R0+0
-	MOVF       ADRESL+0, 0
-	IORWF      R0+0, 1
-	MOVLW      0
-	IORWF      R0+1, 1
-;final_project.c,105 :: 		}
-L_end_ATD_read:
-	RETURN
-; end of _ATD_read
