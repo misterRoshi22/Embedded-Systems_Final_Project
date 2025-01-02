@@ -21,11 +21,6 @@ main
 				Delay_1us
 				Delay_5500us
 				Delay_50us
-	draw_left
-	draw_up
-	draw_right
-	move_down
-	move_right
 	IntToStr
 		WordToStr
 			Div_16X16_U

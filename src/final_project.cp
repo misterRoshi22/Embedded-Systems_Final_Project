@@ -31,23 +31,7 @@ void draw_h(void);
 void draw_l(void);
 void move_next_letter(void);
 void enter_new_line(void);
-#line 1 "c:/users/20210383/desktop/project/src/../include/draw_base.h"
-
-
-
-
-void draw_right(void);
-void draw_left(void);
-void draw_down(void);
-void draw_up(void);
-void draw_down_right(void);
-void draw_up_left(void);
-
-void move_right();
-void move_left();
-void move_up();
-void move_down();
-#line 7 "C:/Users/20210383/Desktop/project/src/final_project.c"
+#line 6 "C:/Users/20210383/Desktop/project/src/final_project.c"
 unsigned int analog_value;
 unsigned char timer_value;
 char print_string[7];
@@ -57,7 +41,6 @@ char print_i[7], print_j[7];
 unsigned char update_lcd = 0;
 unsigned int angle;
 unsigned char HL;
-unsigned char MOTOR1_SPEED;
 
 
 
@@ -74,7 +57,7 @@ void Timer0_init(void) {
 
 
 void Timer2_init(void) {
-#line 45 "C:/Users/20210383/Desktop/project/src/final_project.c"
+#line 43 "C:/Users/20210383/Desktop/project/src/final_project.c"
  T2CON = 0x06;
 
 
@@ -84,39 +67,6 @@ void Timer2_init(void) {
  PIR1 &= ~0x02;
  PIE1 |= 0x02;
 }
-int step;
-int sub;
-void draw_circle() {
-
- angle = 1200;
- Delay_ms(200);
-
-
-
- for (step = 0; step < 36; step++) {
-
-
- if (step < 18) {
- MOTOR1_SPEED = 0xE0;
- } else {
- MOTOR1_SPEED = 0xF0;
- }
-
-
-
- for (sub = 0; sub < 5; sub++) {
- draw_right();
- draw_up();
- }
-
-
-
- }
-
-
- angle = 900;
- Delay_ms(200);
-}
 
 
 void interrupt(void) {
@@ -124,7 +74,7 @@ void interrupt(void) {
  if (INTCON & 0x04) {
  PORTC ^= 0x04;
  INTCON &= ~0x04;
- TMR0 = MOTOR1_SPEED;
+ TMR0 = 0xF0;
  i++;
  }
  if (i == 100) {
@@ -137,6 +87,8 @@ void interrupt(void) {
  if (PIR1 & 0x02) {
  PORTC ^= 0x08;
  PIR1 &= ~0x02;
+
+
  j++;
  }
  if (j == 100) {
@@ -204,23 +156,6 @@ void main() {
  PIE2 |= 0x01;
  CCPR2H = 2000 >> 8;
  CCPR2L = 2000;
- angle = 800;
- Delay_ms(100);
- draw_left();
- draw_up();
- draw_right();
- angle = 1200;
- Delay_ms(100);
- move_down();
- move_down();
- angle = 800;
- Delay_ms(100);
- draw_left();
- draw_up();
- angle = 1200;
- Delay_ms(100);
- move_right();
-
 
 
  while (1) {
@@ -234,7 +169,7 @@ void main() {
  Lcd_Out(2, 1, print_j);
 
  }
-#line 209 "C:/Users/20210383/Desktop/project/src/final_project.c"
+#line 159 "C:/Users/20210383/Desktop/project/src/final_project.c"
  if(PORTD & 0x10) draw_e();
  if(PORTD & 0x20) draw_a();
 
@@ -243,9 +178,9 @@ void main() {
  angle = 1000;
  } else if (PORTD & 0x02) {
  angle = 1300;
+ } else if (PORTD & 0x04) {
+ angle = 3500;
  }
-
-
 
 
 

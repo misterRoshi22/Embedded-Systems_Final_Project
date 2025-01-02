@@ -219,7 +219,6 @@ double2longint
 double2longword
 double2word
 draw_a
-draw_circle
 draw_diag_time
 draw_down
 draw_down_right
@@ -324,7 +323,6 @@ memcmp
 memcpy
 memmove
 memset
-motor1_speed
 move_down
 move_left
 move_next_letter
@@ -592,7 +590,6 @@ sspov
 sspov_bit
 sspstat
 status
-step
 strcat
 strchr
 strcmp
@@ -607,7 +604,6 @@ strrchr
 strspn
 strstr
 strtok
-sub
 sub_32x32_fp
 swap
 sync
