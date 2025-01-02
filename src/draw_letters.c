@@ -5,13 +5,11 @@ void draw_e(void) {
   draw_left();
   draw_up();
   draw_right();
-  draw_left();
-  draw_down();
-  draw_down();
-  draw_right();
+  move_down();
+  move_down();
   draw_left();
   draw_up();
-  draw_right();
+  move_right();
 }
 
 void draw_a(void) {

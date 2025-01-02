@@ -1,5 +1,5 @@
-#line 1 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/draw_letters.c"
-#line 1 "c:/users/shaba/onedrive/desktop/uni/embedded systems/embedded-systems_final_project/src/../include/draw_base.h"
+#line 1 "C:/Users/20210383/Desktop/project/src/draw_letters.c"
+#line 1 "c:/users/20210383/desktop/project/src/../include/draw_base.h"
 
 
 
@@ -10,7 +10,12 @@ void draw_down(void);
 void draw_up(void);
 void draw_down_right(void);
 void draw_up_left(void);
-#line 1 "c:/users/shaba/onedrive/desktop/uni/embedded systems/embedded-systems_final_project/src/../include/draw_letters.h"
+
+void move_right();
+void move_left();
+void move_up();
+void move_down();
+#line 1 "c:/users/20210383/desktop/project/src/../include/draw_letters.h"
 
 
 
@@ -21,18 +26,16 @@ void draw_h(void);
 void draw_l(void);
 void move_next_letter(void);
 void enter_new_line(void);
-#line 4 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/draw_letters.c"
+#line 4 "C:/Users/20210383/Desktop/project/src/draw_letters.c"
 void draw_e(void) {
  draw_left();
  draw_up();
  draw_right();
- draw_left();
- draw_down();
- draw_down();
- draw_right();
+ move_down();
+ move_down();
  draw_left();
  draw_up();
- draw_right();
+ move_right();
 }
 
 void draw_a(void) {

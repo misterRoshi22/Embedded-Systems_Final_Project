@@ -9,4 +9,9 @@ void draw_up(void);
 void draw_down_right(void);
 void draw_up_left(void);
 
+void move_right();
+void move_left();
+void move_up();
+void move_down();
+
 #endif

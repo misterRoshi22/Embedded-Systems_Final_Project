@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=..\include\draw_letters.h
+Value=..\include\draw_base.h
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -15,6 +15,13 @@ Value=0
 Value=0
 [EEPROM_DEFINITION]
 Value=
+[PROGRAMMER_TYPE]
+Value=mikroE mikroProg
+[CODEGRIP_OPTIONS]
+CODEGRIP_SPEED=0
+CODEGRIP_VERIFY_AFTER=0
+CODEGRIP_SWBP_ENABLED=0
+CODEGRIP_PROGRAMMING_TYPE=
 [FILES]
 File0=final_project.c
 File1=atd.c
@@ -32,10 +39,7 @@ File1=draw_letters.c
 File2=draw_base.c
 File3=atd.c
 File4=..\include\draw_base.h
-File5=..\include\lcd_config.h
-File6=..\include\atd.h
-File7=..\include\draw_letters.h
-Count=8
+Count=5
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -71,11 +75,4 @@ Count=5
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
 30=Conversions
-Count=2
-[PROGRAMMER_TYPE]
-Value=mikroE mikroProg
-[CODEGRIP_OPTIONS]
-CODEGRIP_SPEED=0
-CODEGRIP_VERIFY_AFTER=0
-CODEGRIP_SWBP_ENABLED=0
-CODEGRIP_PROGRAMMING_TYPE=
+Count=3
