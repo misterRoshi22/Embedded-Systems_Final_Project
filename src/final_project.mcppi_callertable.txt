@@ -2,8 +2,9 @@ main
 	__CC2DW
 		____DoICP
 	ATD_init
-	Timer0_init
-	Timer2_init
+	Timer0_Init
+	Timer2_Init
+	Timer1_Init
 	Lcd_Init
 		Delay_5500us
 		Delay_1us
@@ -11,29 +12,122 @@ main
 		Delay_1us
 		Delay_5500us
 		Delay_50us
-	Lcd_Out
+	ATD_read
+	enter_new_line
+		pen_up
+			Delay
+		draw_left
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+	Lcd_Chr_CP
 		Lcd_Cmd
 			Delay_1us
 			Delay_5500us
 			Delay_50us
-		Lcd_Chr_CP
-			Lcd_Cmd
-				Delay_1us
-				Delay_5500us
-				Delay_50us
-	IntToStr
-		WordToStr
-			Div_16X16_U
-	draw_e
-		draw_left
-		draw_up
-		draw_right
-		move_down
-		move_right
 	draw_a
 		draw_up_left
+			Delay
 		draw_down
+			Delay
 		draw_up
+			Delay
 		draw_right
+			Delay
 		draw_down_right
+			Delay
+		pen_up
+			Delay
+		pen_down
+			Delay
+	draw_b
+		draw_right
+			Delay
+		draw_up
+			Delay
+		draw_down
+			Delay
+		draw_left
+			Delay
+	draw_e
+		draw_left
+			Delay
+		draw_up
+			Delay
+		draw_right
+			Delay
+		pen_up
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+	draw_f
+		draw_left
+			Delay
+		draw_up
+			Delay
+		draw_right
+			Delay
+		pen_up
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+	draw_h
+		draw_left
+			Delay
+		draw_up
+			Delay
+		draw_down
+			Delay
+		pen_up
+			Delay
+		draw_right
+			Delay
+	draw_i
+		draw_up
+			Delay
+		draw_right
+			Delay
+		draw_left
+			Delay
+		pen_up
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+	draw_k
+		draw_up_right
+			Delay
+		pen_up
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+		draw_up_left
+			Delay
+		draw_up
+			Delay
+	draw_l
+		draw_up
+			Delay
+		draw_down
+			Delay
+		draw_right
+			Delay
+		draw_left
+			Delay
+	move_next_letter
+		pen_up
+			Delay
+		draw_right
+			Delay
+		pen_down
+			Delay
 interrupt

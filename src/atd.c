@@ -18,4 +18,3 @@ unsigned int ATD_read(unsigned char channel) {
 
     return ((ADRESH << 8) | ADRESL);  // Return 10-bit result (0..1023)
 }
-

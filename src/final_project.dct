@@ -77,6 +77,7 @@ bclif_bit
 bf
 bf_bit
 boot16_delay_5ms
+braille_map
 brgh
 brgh_bit
 byte2double
@@ -85,8 +86,6 @@ bytetostr
 bytetostrwithzeros
 c
 c_bit
-c_i
-c_j
 c1inv
 c1inv_bit
 c1out
@@ -135,6 +134,7 @@ ccpr1l
 ccpr2
 ccpr2h
 ccpr2l
+char_count
 chs0
 chs0_bit
 chs1
@@ -191,6 +191,7 @@ dc
 dc_bit
 dec2bcd
 dec2bcd16
+delay
 delay_100ms
 delay_10ms
 delay_10us
@@ -219,18 +220,24 @@ double2longint
 double2longword
 double2word
 draw_a
+draw_b
 draw_diag_time
 draw_down
+draw_down_left
 draw_down_right
 draw_e
+draw_f
 draw_h
 draw_i
+draw_k
 draw_l
 draw_left
 draw_line_time
 draw_right
+draw_space
 draw_up
 draw_up_left
+draw_up_right
 eeadr
 eeadrh
 eecon1
@@ -265,7 +272,6 @@ go_done_bit
 go_not_done
 go_not_done_bit
 hl
-i
 ibf
 ibf_bit
 ibf_trise_bit
@@ -289,7 +295,7 @@ inttostr
 inttostrwithzeros
 irp
 irp_bit
-j
+k
 lcd_chr
 lcd_chr_cp
 lcd_cmd
@@ -308,6 +314,8 @@ lcd_out
 lcd_out_cp
 lcd_rs
 lcd_rs_direction
+letter
+letter_per_line
 longint2double
 longinttohex
 longinttostrwithzeros
@@ -323,11 +331,7 @@ memcmp
 memcpy
 memmove
 memset
-move_down
-move_left
 move_next_letter
-move_right
-move_up
 mul_16x16_s
 mul_16x16_u
 mul_32x32_fp
@@ -335,6 +339,7 @@ mul_32x32_s
 mul_32x32_u
 mul_8x8_s
 mul_8x8_u
+myscaledvoltage
 not_a
 not_a_bit
 not_address
@@ -388,6 +393,8 @@ peie
 peie_bit
 pen
 pen_bit
+pen_down
+pen_up
 pie1
 pie2
 pir1
@@ -399,8 +406,7 @@ portc
 portd
 porte
 pr2
-print_i
-print_j
+print_angle
 print_string
 ps0
 ps0_bit
@@ -417,14 +423,6 @@ pspif_bit
 pspmode
 pspmode_bit
 pspmode_trise_bit
-pwm1_init
-pwm1_set_duty
-pwm1_start
-pwm1_stop
-pwm2_init
-pwm2_set_duty
-pwm2_start
-pwm2_stop
 r
 r_bit
 r_not_w
@@ -564,6 +562,7 @@ shorttostrwithzeros
 smp
 smp_bit
 spbrg
+speed
 spen
 spen_bit
 sren
@@ -634,6 +633,7 @@ t2ckps1_bit
 t2con
 timer_value
 timer0_init
+timer1_init
 timer2_init
 times
 tmr0

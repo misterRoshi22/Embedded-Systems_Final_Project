@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=..\include\draw_base.h
+Value=timer_init.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -26,8 +26,9 @@ CODEGRIP_PROGRAMMING_TYPE=
 File0=final_project.c
 File1=atd.c
 File2=draw_base.c
-File3=draw_letters.c
-Count=4
+File3=timer_init.c
+File4=misc.c
+Count=5
 [BINARIES]
 Count=0
 [IMAGES]
@@ -35,11 +36,13 @@ Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
 File0=final_project.c
-File1=draw_letters.c
-File2=draw_base.c
-File3=atd.c
-File4=..\include\draw_base.h
-Count=5
+File1=draw_base.c
+File2=atd.c
+File3=timer_init.c
+File4=..\include\misc.h
+File5=misc.c
+File6=..\include\timer_init.h
+Count=7
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -54,25 +57,25 @@ Count=0
 File0=..\include\draw_base.h
 File1=..\include\lcd_config.h
 File2=..\include\atd.h
-File3=..\include\draw_letters.h
-Count=4
+File3=..\include\timer_init.h
+File4=..\include\misc.h
+Count=5
 [PLDS]
 Count=0
 [Useses]
 File0=Lcd
 File1=Lcd_Constants
-File2=PWM
-File3=Conversions
-File4=C_String
-Count=5
+File2=Conversions
+File3=C_String
+Count=4
 [EXPANDED_NODES]
 0=final_project.mcppi
 1=Sources
-6=Header Files
-7=..\
-8=include
+7=Header Files
+8=..\
+9=include
 Count=5
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
-30=Conversions
+1=System Libraries
 Count=3

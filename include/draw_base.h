@@ -2,16 +2,13 @@
 #ifndef DRAW_BASE_H
 #define DRAW_BASE_H
 
-void draw_right(void);
-void draw_left(void);
-void draw_down(void);
-void draw_up(void);
-void draw_down_right(void);
-void draw_up_left(void);
-
-void move_right();
-void move_left();
-void move_up();
-void move_down();
+void draw_right(unsigned char speed);
+void draw_left(unsigned char speed);
+void draw_down(unsigned char speed);
+void draw_up(unsigned char speed);
+void draw_down_right(unsigned char speed);
+void draw_down_left(unsigned char speed);
+void draw_up_right(unsigned char speed);
+void draw_up_left(unsigned char speed);
 
 #endif
