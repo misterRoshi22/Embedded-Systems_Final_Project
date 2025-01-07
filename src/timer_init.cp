@@ -1,12 +1,12 @@
-#line 1 "C:/Users/20210383/Downloads/Embedded-Systems_Final_Project-main/Embedded-Systems_Final_Project-main/src/timer_init.c"
-#line 1 "c:/users/20210383/downloads/embedded-systems_final_project-main/embedded-systems_final_project-main/src/../include/timer_init.h"
+#line 1 "C:/Users/20210383/Desktop/project/src/timer_init.c"
+#line 1 "c:/users/20210383/desktop/project/src/../include/timer_init.h"
 
 
 
 void Timer0_Init(void);
 void Timer2_Init(void);
 void Timer1_Init(void);
-#line 3 "C:/Users/20210383/Downloads/Embedded-Systems_Final_Project-main/Embedded-Systems_Final_Project-main/src/timer_init.c"
+#line 3 "C:/Users/20210383/Desktop/project/src/timer_init.c"
 void Timer0_Init(void) {
  OPTION_REG = 0x05;
  TMR0 = 0xF0;

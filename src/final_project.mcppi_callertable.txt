@@ -45,11 +45,33 @@ main
 	draw_b
 		draw_right
 			Delay
-		draw_up
-			Delay
 		draw_down
 			Delay
 		draw_left
+			Delay
+		draw_up
+			Delay
+	draw_c
+		pen_up
+			Delay
+		draw_up_right
+			Delay
+		pen_down
+			Delay
+		draw_left
+			Delay
+		draw_down
+			Delay
+		draw_right
+			Delay
+		draw_up_left
+			Delay
+	draw_d
+		draw_up_left
+			Delay
+		draw_down
+			Delay
+		draw_up_right
 			Delay
 	draw_e
 		draw_left
@@ -77,6 +99,19 @@ main
 			Delay
 		pen_down
 			Delay
+	draw_g
+		draw_right
+			Delay
+		draw_down_left
+			Delay
+		draw_up_left
+			Delay
+		draw_up_right
+			Delay
+		pen_up
+			Delay
+		draw_down
+			Delay
 	draw_h
 		draw_left
 			Delay
@@ -101,6 +136,17 @@ main
 			Delay
 		pen_down
 			Delay
+	draw_j
+		pen_up
+			Delay
+		draw_up
+			Delay
+		draw_right
+			Delay
+		draw_down
+			Delay
+		draw_down_left
+			Delay
 	draw_k
 		draw_up_right
 			Delay
@@ -122,6 +168,206 @@ main
 		draw_right
 			Delay
 		draw_left
+			Delay
+	draw_m
+		draw_up_right
+			Delay
+		draw_down
+			Delay
+		pen_up
+			Delay
+		draw_left
+			Delay
+		draw_up
+			Delay
+		draw_down_right
+			Delay
+	draw_n
+		pen_up
+			Delay
+		draw_down_left
+			Delay
+		pen_down
+			Delay
+		draw_up
+			Delay
+		draw_down_right
+			Delay
+	draw_o
+		pen_up
+			Delay
+		draw_up
+			Delay
+		pen_down
+			Delay
+		draw_down_right
+			Delay
+		draw_down_left
+			Delay
+		draw_up_left
+			Delay
+		draw_up_right
+			Delay
+		draw_down
+			Delay
+	draw_p
+		draw_right
+			Delay
+		draw_up
+			Delay
+		draw_left
+			Delay
+		draw_down
+			Delay
+		pen_up
+			Delay
+		draw_up_right
+			Delay
+	draw_q
+		draw_down_right
+			Delay
+		pen_up
+			Delay
+		draw_left
+			Delay
+		pen_down
+			Delay
+		draw_up_left
+			Delay
+		draw_up_right
+			Delay
+		draw_down_left
+			Delay
+		draw_up
+			Delay
+	draw_r
+		draw_down
+			Delay
+		pen_up
+			Delay
+		draw_right
+			Delay
+		pen_down
+			Delay
+		draw_up_left
+			Delay
+		draw_up
+			Delay
+		draw_down_right
+			Delay
+		draw_left
+			Delay
+	draw_s
+		pen_up
+			Delay
+		draw_down_left
+			Delay
+		pen_down
+			Delay
+		draw_right
+			Delay
+		draw_up_right
+			Delay
+		draw_left
+			Delay
+	draw_t
+		draw_up
+			Delay
+		draw_right
+			Delay
+		draw_left
+			Delay
+		pen_up
+			Delay
+		draw_down_right
+			Delay
+		pen_down
+			Delay
+		draw_down
+			Delay
+	draw_u
+		pen_up
+			Delay
+		draw_up_left
+			Delay
+		pen_down
+			Delay
+		draw_down
+			Delay
+		draw_down_left
+			Delay
+		draw_right
+			Delay
+		draw_up
+			Delay
+	draw_v
+		draw_up_left
+			Delay
+		pen_up
+			Delay
+		draw_left
+			Delay
+		pen_down
+			Delay
+		draw_down
+			Delay
+	draw_w
+		draw_down_left
+			Delay
+		draw_up
+			Delay
+		pen_up
+			Delay
+		draw_left
+			Delay
+		pen_down
+			Delay
+		draw_down
+			Delay
+		draw_up_left
+			Delay
+	draw_x
+		draw_up_left
+			Delay
+		pen_up
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+		draw_up_right
+			Delay
+	draw_y
+		draw_up_left
+			Delay
+		pen_up
+			Delay
+		draw_right
+			Delay
+		pen_down
+			Delay
+		draw_down_left
+			Delay
+		draw_down
+			Delay
+		draw_up
+			Delay
+	draw_z
+		draw_up_right
+			Delay
+		draw_left
+			Delay
+		pen_up
+			Delay
+		draw_down_right
+			Delay
+		pen_down
+			Delay
+		draw_down_left
+			Delay
+		draw_right
+			Delay
+		draw_up_left
 			Delay
 	move_next_letter
 		pen_up
