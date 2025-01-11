@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=timer_init.c
+Value=final_project.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -15,13 +15,6 @@ Value=0
 Value=0
 [EEPROM_DEFINITION]
 Value=
-[PROGRAMMER_TYPE]
-Value=mikroE mikroProg
-[CODEGRIP_OPTIONS]
-CODEGRIP_SPEED=0
-CODEGRIP_VERIFY_AFTER=0
-CODEGRIP_SWBP_ENABLED=0
-CODEGRIP_PROGRAMMING_TYPE=
 [FILES]
 File0=final_project.c
 File1=atd.c
@@ -39,10 +32,9 @@ File0=final_project.c
 File1=draw_base.c
 File2=atd.c
 File3=timer_init.c
-File4=..\include\misc.h
-File5=misc.c
-File6=..\include\timer_init.h
-Count=7
+File4=misc.c
+File5=..\include\misc.h
+Count=6
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -78,4 +70,11 @@ Count=5
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
 1=System Libraries
-Count=3
+Count=2
+[PROGRAMMER_TYPE]
+Value=mikroE mikroProg
+[CODEGRIP_OPTIONS]
+CODEGRIP_SPEED=0
+CODEGRIP_VERIFY_AFTER=0
+CODEGRIP_SWBP_ENABLED=0
+CODEGRIP_PROGRAMMING_TYPE=

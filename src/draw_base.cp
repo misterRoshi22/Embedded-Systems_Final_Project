@@ -1,10 +1,10 @@
-#line 1 "C:/Users/20210383/Desktop/project/src/draw_base.c"
-#line 1 "c:/users/20210383/desktop/project/src/../include/misc.h"
+#line 1 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/draw_base.c"
+#line 1 "c:/users/shaba/onedrive/desktop/uni/embedded systems/embedded-systems_final_project/src/../include/misc.h"
 
 
 
 void Delay(unsigned int delay);
-#line 3 "C:/Users/20210383/Desktop/project/src/draw_base.c"
+#line 3 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/draw_base.c"
 const char DRAW_LINE_TIME = 100;
 const char DRAW_DIAG_TIME = 102;
 

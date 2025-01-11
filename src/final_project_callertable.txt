@@ -3,7 +3,6 @@ main
 		____DoICP
 	ATD_init
 	Timer0_Init
-	Timer2_Init
 	Timer1_Init
 	Lcd_Init
 		Delay_5500us
@@ -12,11 +11,18 @@ main
 		Delay_1us
 		Delay_5500us
 		Delay_50us
+	ATD_read
+	Mul_16X16_U
+	Div_16x16_S
+		Div_16x16_S_L
+	Delay
 	enter_new_line
 		pen_up
 			Delay
 		draw_left
+			Delay
 		draw_down
+			Delay
 		pen_down
 			Delay
 	Lcd_Chr_CP
@@ -24,71 +30,11 @@ main
 			Delay_1us
 			Delay_5500us
 			Delay_50us
-	draw_a
-		draw_up_left
-		draw_down
-		draw_up
-		draw_right
-		draw_down_right
-	draw_b
-		draw_left
-		draw_up
-		draw_down
-		draw_right
-	draw_e
-		draw_left
-		draw_up
-		draw_right
-		pen_up
-			Delay
-		draw_down
-		pen_down
-			Delay
-	draw_f
-		draw_left
-		draw_up
-		draw_right
-		pen_up
-			Delay
-		draw_down
-		pen_down
-			Delay
-	draw_h
-		draw_left
-		draw_up
-		draw_down
-		pen_up
-			Delay
-		draw_right
-		pen_down
-			Delay
-	draw_i
-		draw_up
-		draw_right
-		draw_left
-		pen_up
-			Delay
-		draw_down
-		pen_down
-			Delay
-	draw_k
-		draw_up_right
-		pen_up
-			Delay
-		draw_down
-		pen_down
-			Delay
-		draw_up_left
-		draw_up
-	draw_l
-		draw_up
-		draw_down
-		draw_right
-		draw_left
 	move_next_letter
 		pen_up
 			Delay
 		draw_right
+			Delay
 		pen_down
 			Delay
 interrupt
