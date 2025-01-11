@@ -305,6 +305,7 @@ void draw_h(void) {
   pen_up();
   draw_right(speed);
   draw_right(speed);
+  pen_down();
   draw_up(speed);
    draw_up(speed);
   draw_down(speed);
@@ -329,6 +330,7 @@ void draw_i(void) { //TODO return to origin
 void draw_j(void) {
   pen_up();
   draw_up(speed);
+  pen_down();
   draw_right(speed);
   draw_down(speed);
   draw_down_left(speed);
@@ -362,8 +364,8 @@ void draw_m(void) {
   draw_down(speed);
   draw_down(speed);
   pen_up();
-  draw_left(speed);
-  draw_left(speed);
+  draw_right(speed);
+  draw_right(speed);
   draw_up(speed);
   draw_up(speed);
   draw_down_right(speed);
@@ -464,7 +466,7 @@ void draw_u(void) {
   draw_up_left(speed);
   pen_down();
   draw_down(speed);
-  draw_down_left(speed);
+  draw_down_right(speed);
   draw_right(speed);
   draw_up(speed);
   draw_up(speed);
@@ -474,14 +476,15 @@ void draw_u(void) {
 }
 
 void draw_v(void) {
-  draw_up_left(speed);
   pen_up();
-  draw_left(speed);
-  draw_left(speed);
+  draw_up_left(speed);
   pen_down();
   draw_down(speed);
   draw_down(speed);
-  draw_up_left(speed);
+  draw_up_right(speed);
+  draw_up_right(speed);
+  pen_up();
+  draw_down_left(speed);
 }
 
 void draw_x(void) {
@@ -504,8 +507,8 @@ void draw_w(void) {
   draw_up(speed);
   draw_up(speed);
   pen_up();
-  draw_left(speed);
-  draw_left(speed);
+  draw_right(speed);
+  draw_right(speed);
   pen_down();
   draw_down(speed);
   draw_down(speed);
@@ -515,6 +518,7 @@ void draw_w(void) {
 void draw_y(void) {
   draw_up_left(speed);
   pen_up();
+  draw_right(speed);
   draw_right(speed);
   pen_down();
   draw_down_left(speed);
