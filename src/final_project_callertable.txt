@@ -12,25 +12,47 @@ main
 		Delay_5500us
 		Delay_50us
 	ATD_read
-	IntToStr
-		WordToStr
-			Div_16X16_U
-	Lcd_Out
-		Lcd_Cmd
-			Delay_1us
-			Delay_5500us
-			Delay_50us
-		Lcd_Chr_CP
+	Mul_16X16_U
+	Div_16x16_S
+		Div_16x16_S_L
+	update_current_letter_display
+		Lcd_Out
 			Lcd_Cmd
 				Delay_1us
 				Delay_5500us
 				Delay_50us
-	Lcd_Chr_CP
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+		Lcd_Chr
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+	update_current_size_display
+		IntToStr
+			WordToStr
+				Div_16X16_U
+		ShiftCharsLeft
+			strlen
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+	Delay
+	Lcd_Chr
 		Lcd_Cmd
 			Delay_1us
 			Delay_5500us
 			Delay_50us
-	Delay
 interrupt
 	Div_16x16_S
 		Div_16x16_S_L

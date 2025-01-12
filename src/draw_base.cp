@@ -4,6 +4,9 @@
 
 
 void Delay(unsigned int delay);
+void update_current_letter_display(char current_letter);
+void update_current_size_display(unsigned int input_size);
+void ShiftCharsLeft(char *str);
 #line 3 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/draw_base.c"
 const char DRAW_LINE_TIME = 100;
 const char DRAW_DIAG_TIME = 102;
