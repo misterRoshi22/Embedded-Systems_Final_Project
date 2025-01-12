@@ -82,9 +82,41 @@ void Delay(unsigned int delay);
 
 void pen_up(void);
 void pen_down(void);
-#line 72 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
+
+void draw_a(void);
+void draw_b(void);
+void draw_c(void);
+void draw_d(void);
+void draw_e(void);
+void draw_f(void);
+void draw_g(void);
+void draw_h(void);
+void draw_i(void);
+void draw_j(void);
+void draw_k(void);
+void draw_l(void);
+void draw_m(void);
+void draw_n(void);
+void draw_o(void);
+void draw_p(void);
+void draw_q(void);
+void draw_r(void);
+void draw_s(void);
+void draw_t(void);
+void draw_u(void);
+void draw_v(void);
+void draw_w(void);
+void draw_x(void);
+void draw_y(void);
+void draw_z(void);
+void draw_space(void);
+
 void move_next_letter(void);
 void enter_new_line(void);
+
+unsigned char count_overflow = 0;
+unsigned char speed_tester = 0;
+char print_speed_tester[7];
 
 
 void interrupt(void) {
@@ -93,9 +125,11 @@ void interrupt(void) {
  PORTC ^= 0x02;
  PORTC ^= 0x08;
  INTCON &= ~0x04;
- TMR0 = 0xF0;
+ TMR0 = 0xE8 + ((size - 50) * (0xF8 - 0xE8)) / (255 - 50);
+ count_overflow++;
  }
-#line 90 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
+ if(count_overflow == 255) speed_tester++;
+#line 96 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
  if(PIR1 & 0x04){
  if(HL){
  CCPR1H = angle >> 8;
@@ -144,9 +178,12 @@ void main() {
  while (1) {
 
  size = ATD_read(0);
- size = 50 + ((size * (150 - 50)) / 242);
 
+ IntToStr(size, print_speed);
+ Lcd_Out(1, 1, print_speed);
 
+ IntToStr(speed_tester, print_speed_tester);
+ Lcd_Out(2, 1, print_speed_tester);
 
 
  if ((PORTD & 0x40) == 0x40) {
@@ -170,9 +207,36 @@ void main() {
  }
  Lcd_Chr_Cp(braille_map[letter]);
  char_count++;
-#line 192 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
+
+ if(braille_map[letter] == 'a') draw_a();
+ if(braille_map[letter] == 'b') draw_b();
+ if(braille_map[letter] == 'c') draw_c();
+ if(braille_map[letter] == 'd') draw_d();
+ if(braille_map[letter] == 'e') draw_e();
+ if(braille_map[letter] == 'f') draw_f();
+ if(braille_map[letter] == 'g') draw_g();
+ if(braille_map[letter] == 'h') draw_h();
+ if(braille_map[letter] == 'i') draw_i();
+ if(braille_map[letter] == 'j') draw_j();
+ if(braille_map[letter] == 'k') draw_k();
+ if(braille_map[letter] == 'l') draw_l();
+ if(braille_map[letter] == 'm') draw_m();
+ if(braille_map[letter] == 'n') draw_n();
+ if(braille_map[letter] == 'o') draw_o();
+ if(braille_map[letter] == 'p') draw_p();
+ if(braille_map[letter] == 'q') draw_q();
+ if(braille_map[letter] == 'r') draw_r();
+ if(braille_map[letter] == 's') draw_s();
+ if(braille_map[letter] == 't') draw_t();
+ if(braille_map[letter] == 'u') draw_u();
+ if(braille_map[letter] == 'v') draw_v();
+ if(braille_map[letter] == 'w') draw_w();
+ if(braille_map[letter] == 'x') draw_x();
+ if(braille_map[letter] == 'y') draw_y();
+ if(braille_map[letter] == 'z') draw_z();
+
  letter = 0x00;
- move_next_letter();
+
 
  while ((PORTD & 0x40) == 0x40);
  Delay(50);
@@ -189,6 +253,7 @@ void main() {
 
 }
 
+
 void pen_up(void) {
  angle = SERVO_UP;
  Delay(100);
@@ -198,27 +263,365 @@ void pen_down(void) {
  angle = SERVO_DOWN;
  Delay(100);
 }
-#line 549 "C:/Users/shaba/OneDrive/Desktop/UNI/Embedded Systems/Embedded-Systems_Final_Project/src/final_project.c"
+
+void draw_a(void) {
+ draw_up_left(100);
+ draw_down(100);
+ draw_down(100);
+ draw_up(100);
+ draw_right(100);
+ draw_down_right(100);
+ pen_up();
+ draw_up_left(100);
+ pen_down();
+}
+
+void draw_b(void) {
+ draw_right(100);
+ draw_down(100);
+ draw_left(100);
+ draw_left(100);
+ draw_up(100);
+ draw_up(100);
+ draw_right(100);
+ draw_down(100);
+ draw_left(100);
+ draw_right(100);
+}
+
+void draw_c(void) {
+ pen_up();
+ draw_up_right(100);
+ pen_down();
+ draw_left(100);
+ draw_left(100);
+ draw_down(100);
+ draw_down(100);
+ draw_right(100);
+ draw_right(100);
+ pen_up();
+ draw_up_left(100);
+ pen_down();
+}
+
+void draw_d(void) {
+ draw_up_left(100);
+ draw_down(100);
+ draw_down(100);
+ draw_up_right(100);
+}
+
+void draw_e(void) {
+ draw_left(100);
+ draw_up(100);
+ draw_right(100);
+ pen_up();
+ draw_down(100);
+ draw_down(100);
+ pen_down();
+ draw_left(100);
+ draw_up(100);
+ draw_right(100);
+}
+
+void draw_f(void) {
+ draw_left(100);
+ draw_up(100);
+ draw_right(100);
+ pen_up();
+ draw_down(100);
+ draw_down(100);
+ draw_left(100);
+ pen_down();
+ draw_up(100);
+ pen_up();
+ draw_right(100);
+ pen_down();
+}
+
+void draw_g(void) {
+ draw_right(100);
+ draw_down_left(100);
+ draw_up_left(100);
+ draw_up_right(100);
+ pen_up();
+ draw_down(100);
+}
+
+void draw_h(void) {
+ draw_left(100);
+ draw_up(100);
+ draw_down(100);
+ draw_down(100);
+ pen_up();
+ draw_right(100);
+ draw_right(100);
+ pen_down();
+ draw_up(100);
+ draw_up(100);
+ draw_down(100);
+ draw_left(100);
+}
+
+void draw_i(void) {
+ draw_up(100);
+ draw_right(100);
+ draw_left(100);
+ draw_left(100);
+ pen_up();
+ draw_down(100);
+ draw_down(100);
+ pen_down();
+ draw_right(100);
+ draw_right(100);
+ draw_left(100);
+ draw_up(100);
+}
+
+void draw_j(void) {
+ pen_up();
+ draw_up(100);
+ pen_down();
+ draw_right(100);
+ draw_down(100);
+ draw_down_left(100);
+ draw_up(100);
+}
+
+void draw_k(void) {
+ draw_up_right(100);
+ pen_up();
+ draw_down(100);
+ draw_down(100);
+ pen_down();
+ draw_up_left(100);
+ draw_up(100);
+ draw_down(100);
+ draw_down(100);
+ draw_up(100);
+}
+
+void draw_l(void) {
+ pen_up();
+ draw_up_left(100);
+ pen_down();
+ draw_down(100);
+ draw_down(100);
+ draw_right(100);
+ pen_up();
+ draw_up(100);
+ pen_down();
+
+
+
+
+
+
+}
+
+void draw_m(void) {
+ draw_up_right(100);
+ draw_down(100);
+ draw_down(100);
+ pen_up();
+ draw_right(100);
+ draw_right(100);
+ draw_up(100);
+ draw_up(100);
+ draw_down_right(100);
+}
+
+void draw_n(void) {
+ pen_up();
+ draw_down_left(100);
+ pen_down();
+ draw_up(100);
+ draw_up(100);
+ draw_down_right(100);
+ draw_down_right(100);
+ draw_up(100);
+ draw_up(100);
+ pen_up();
+ draw_down_right(100);
+ pen_down();
+}
+
+void draw_o(void) {
+ pen_up();
+ draw_up(100);
+ pen_down();
+ draw_down_right(100);
+ draw_down_left(100);
+ draw_up_left(100);
+ draw_up_right(100);
+ pen_up();
+ draw_down(100);
+ pen_down();
+}
+
+void draw_p(void) {
+ draw_right(100);
+ draw_up(100);
+ draw_left(100);
+ draw_down(100);
+ draw_down(100);
+ pen_up();
+ draw_up_right(100);
+}
+
+void draw_q(void) {
+ draw_down_right(100);
+ pen_up();
+ draw_left(100);
+ pen_down();
+ draw_up_left(100);
+ draw_up_right(100);
+ draw_down_right(100);
+ draw_down_left(100);
+ pen_up();
+ draw_up(100);
+ pen_down();
+}
+
+void draw_r(void) {
+ draw_down(100);
+ pen_up();
+ draw_right(100);
+ pen_down();
+ draw_up_left(100);
+ draw_up(100);
+ draw_down_right(100);
+ draw_left(100);
+}
+
+void draw_s(void) {
+ pen_up();
+ draw_down_left(100);
+ pen_down();
+ draw_right(100);
+ draw_up_right(100);
+ draw_left(100);
+ draw_left(100);
+ draw_up_right(100);
+ draw_right(100);
+ pen_up();
+ draw_down_left(100);
+ pen_down();
+}
+
+void draw_t(void){
+ draw_up(100);
+ draw_right(100);
+ draw_left(100);
+ draw_left(100);
+ pen_up();
+ draw_down_right(100);
+ pen_down();
+ draw_down(100);
+ draw_up(100);
+}
+
+void draw_u(void) {
+ pen_up();
+ draw_up_left(100);
+ pen_down();
+ draw_down(100);
+ draw_down_right(100);
+ draw_right(100);
+ draw_up(100);
+ draw_up(100);
+ pen_up();
+ draw_down_left(100);
+ pen_down();
+}
+
+void draw_v(void) {
+ pen_up();
+ draw_up_left(100);
+ pen_down();
+ draw_down(100);
+ draw_down(100);
+ draw_up_right(100);
+ draw_up_right(100);
+ pen_up();
+ draw_down_left(100);
+}
+
+void draw_x(void) {
+ draw_up_left(100);
+ pen_up();
+ draw_down(100);
+ draw_down(100);
+ pen_down();
+ draw_up_right(100);
+ draw_up_right(100);
+ pen_up();
+ draw_down(100);
+ draw_down(100);
+ pen_down();
+ draw_up_left(100);
+}
+
+void draw_w(void) {
+ draw_down_left(100);
+ draw_up(100);
+ draw_up(100);
+ pen_up();
+ draw_right(100);
+ draw_right(100);
+ pen_down();
+ draw_down(100);
+ draw_down(100);
+ draw_up_left(100);
+}
+
+void draw_y(void) {
+ draw_up_left(100);
+ pen_up();
+ draw_right(100);
+ draw_right(100);
+ pen_down();
+ draw_down_left(100);
+ draw_down(100);
+ pen_up();
+ draw_up(100);
+}
+
+void draw_z(void) {
+ draw_up_right(100);
+ draw_left(100);
+ draw_left(100);
+ pen_up();
+ draw_down_right(100);
+ pen_down();
+ draw_down_left(100);
+ draw_right(100);
+ draw_right(100);
+ pen_up();
+ draw_up_left(100);
+}
+
+
 void draw_space(void) {
  pen_up();
- draw_right(size);
- draw_right(size);
- draw_right(size);
- draw_right(size);
+ draw_right(100);
+ draw_right(100);
+ draw_right(100);
+ draw_right(100);
  pen_down();
 }
 
 void move_next_letter(void) {
 pen_up();
- draw_right(size);
- draw_right(size);
+ draw_right(100);
+ draw_right(100);
 pen_down();
 }
 
 void enter_new_line(void) {
 pen_up();
- for(times = 0; times<2*(letters_per_line-1); times++) draw_left(size);
- draw_down(size);
- draw_down(size);
+ for(times = 0; times<2*(letters_per_line-1); times++) draw_left(100);
+ draw_down(100);
+ draw_down(100);
 pen_down();
 }

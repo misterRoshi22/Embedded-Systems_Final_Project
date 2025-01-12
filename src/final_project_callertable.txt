@@ -12,29 +12,25 @@ main
 		Delay_5500us
 		Delay_50us
 	ATD_read
-	Mul_16X16_U
-	Div_16x16_S
-		Div_16x16_S_L
-	Delay
-	enter_new_line
-		pen_up
-			Delay
-		draw_left
-			Delay
-		draw_down
-			Delay
-		pen_down
-			Delay
+	IntToStr
+		WordToStr
+			Div_16X16_U
+	Lcd_Out
+		Lcd_Cmd
+			Delay_1us
+			Delay_5500us
+			Delay_50us
+		Lcd_Chr_CP
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
 	Lcd_Chr_CP
 		Lcd_Cmd
 			Delay_1us
 			Delay_5500us
 			Delay_50us
-	move_next_letter
-		pen_up
-			Delay
-		draw_right
-			Delay
-		pen_down
-			Delay
+	Delay
 interrupt
+	Div_16x16_S
+		Div_16x16_S_L

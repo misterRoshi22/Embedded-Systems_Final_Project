@@ -33,8 +33,7 @@ File1=draw_base.c
 File2=atd.c
 File3=timer_init.c
 File4=misc.c
-File5=..\include\misc.h
-Count=6
+Count=5
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -70,7 +69,7 @@ Count=5
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
 1=System Libraries
-Count=2
+Count=3
 [PROGRAMMER_TYPE]
 Value=mikroE mikroProg
 [CODEGRIP_OPTIONS]
