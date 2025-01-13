@@ -3,7 +3,6 @@ main
 		____DoICP
 	ATD_init
 	Timer0_Init
-	Timer2_Init
 	Timer1_Init
 	Lcd_Init
 		Delay_5500us
@@ -13,16 +12,43 @@ main
 		Delay_5500us
 		Delay_50us
 	ATD_read
-	enter_new_line
-		pen_up
-			Delay
-		draw_left
-			Delay
-		draw_down
-			Delay
-		pen_down
-			Delay
-	Lcd_Chr_CP
+	Mul_16X16_U
+	Div_16x16_S
+		Div_16x16_S_L
+	update_current_letter_display
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+		Lcd_Chr
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+	update_current_size_display
+		IntToStr
+			WordToStr
+				Div_16X16_U
+		ShiftCharsLeft
+			strlen
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+	Delay
+	Lcd_Chr
 		Lcd_Cmd
 			Delay_1us
 			Delay_5500us
@@ -123,6 +149,8 @@ main
 			Delay
 		draw_right
 			Delay
+		pen_down
+			Delay
 	draw_i
 		draw_up
 			Delay
@@ -140,6 +168,8 @@ main
 		pen_up
 			Delay
 		draw_up
+			Delay
+		pen_down
 			Delay
 		draw_right
 			Delay
@@ -161,13 +191,17 @@ main
 		draw_up
 			Delay
 	draw_l
-		draw_up
+		pen_up
+			Delay
+		draw_up_left
+			Delay
+		pen_down
 			Delay
 		draw_down
 			Delay
 		draw_right
 			Delay
-		draw_left
+		draw_up
 			Delay
 	draw_m
 		draw_up_right
@@ -177,6 +211,8 @@ main
 		pen_up
 			Delay
 		draw_left
+			Delay
+		pen_down
 			Delay
 		draw_up
 			Delay
@@ -294,22 +330,26 @@ main
 			Delay
 		draw_down
 			Delay
-		draw_down_left
+		draw_down_right
 			Delay
 		draw_right
 			Delay
 		draw_up
 			Delay
-	draw_v
-		draw_up_left
+		draw_down_left
 			Delay
+	draw_v
 		pen_up
 			Delay
-		draw_left
+		draw_up_left
 			Delay
 		pen_down
 			Delay
 		draw_down
+			Delay
+		draw_up_right
+			Delay
+		draw_down_left
 			Delay
 	draw_w
 		draw_down_left
@@ -318,7 +358,7 @@ main
 			Delay
 		pen_up
 			Delay
-		draw_left
+		draw_right
 			Delay
 		pen_down
 			Delay
@@ -369,6 +409,16 @@ main
 			Delay
 		draw_up_left
 			Delay
+	enter_new_line
+		pen_up
+			Delay
+		draw_left
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+	draw_space
 	move_next_letter
 		pen_up
 			Delay
@@ -377,3 +427,6 @@ main
 		pen_down
 			Delay
 interrupt
+	Mul_16X16_U
+	Div_16x16_S
+		Div_16x16_S_L

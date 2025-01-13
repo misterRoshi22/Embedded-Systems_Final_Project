@@ -9,7 +9,7 @@ const unsigned int SERVO_UP = 1800;
 const unsigned int SERVO_DOWN = 1000;
 
 char braille_map[64] = {
-    ' ', '!', '!', '!', '!', '!', '!', '!',  // 0x00 - 0x07
+    ' ', '\n', '!', '!', '!', '!', '!', '!',  // 0x00 - 0x07
     '!', '!', '!', '!', '!', '!', '!', '!',  // 0x08 - 0x0F
     '!', '!', '!', '!', '!', '!', '!', '!',  // 0x10 - 0x17
     'I', '!', 'S', '!', 'J', 'W', 'T', '!',  // 0x18 - 0x1F
@@ -196,50 +196,8 @@ void main() {
                 if(braille_map[letter] == 'x') draw_x();
                 if(braille_map[letter] == 'y') draw_y();
                 if(braille_map[letter] == 'z') draw_z();
-
-                if(char_index == 0) draw_t();
-                if(char_index == 1) draw_h();
-                if(char_index == 2) draw_e();
-                if(char_index == 3) draw_space();
-                if(char_index == 4) draw_q();
-                if(char_index == 5) draw_u();
-                if(char_index == 6) draw_i();
-                if(char_index == 7) draw_c();
-                if(char_index == 8) draw_k();
-                if(char_index == 9) draw_space();
-                if(char_index == 10) draw_b();
-                if(char_index == 11) draw_r();
-                if(char_index == 12) draw_o();
-                if(char_index == 13) draw_w();
-                if(char_index == 14) draw_n();
-                if(char_index == 15) draw_space();
-                if(char_index == 16) draw_f();
-                if(char_index == 17) draw_o();
-                if(char_index == 18) draw_x();
-                if(char_index == 19) draw_space();
-                if(char_index == 20) draw_j();
-                if(char_index == 21) draw_u();
-                if(char_index == 22) draw_m();
-                if(char_index == 23) draw_p();
-                if(char_index == 24) draw_s();
-                if(char_index == 25) draw_space();
-                if(char_index == 26) draw_o();
-                if(char_index == 27) draw_v();
-                if(char_index == 28) draw_e();
-                if(char_index == 29) draw_r();
-                if(char_index == 30) draw_space();
-                if(char_index == 31) draw_t();
-                if(char_index == 32) draw_h();
-                if(char_index == 33) draw_e();
-                if(char_index == 34) draw_space();
-                if(char_index == 35) draw_l();
-                if(char_index == 36) draw_a();
-                if(char_index == 37) draw_z();
-                if(char_index == 38) draw_y();
-                if(char_index == 39) draw_space();
-                if(char_index == 40) draw_d();
-                if(char_index == 41) draw_o();
-                if(char_index == 42) draw_g();
+                if(braille_map[letter] == '\n') enter_new_line();
+                if(braille_map[letter] == ' ') draw_space();
 
             current_column++; // Move to the next column
             letter = 0x00; // Clear letter
@@ -628,7 +586,7 @@ void move_next_letter(void) {
 unsigned char times;
 void enter_new_line(void) {
   pen_up();
-  for(times = 0; times<2*(letters_per_line-1); times++) draw_left(100);
+  for(times = 0; times<2*(current_column-1); times++) draw_left(100);
   draw_down(100);
   draw_down(100);
   pen_down();

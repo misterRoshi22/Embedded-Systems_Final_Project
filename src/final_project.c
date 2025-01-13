@@ -7,9 +7,11 @@
 // constants
 const unsigned int SERVO_UP = 1800;
 const unsigned int SERVO_DOWN = 1000;
+const char MIN_LETTERS_PER_LINE = 10;
+const char MAX_LETTERS_PER_LINE = 20;
 
 char braille_map[64] = {
-    ' ', '!', '!', '!', '!', '!', '!', '!',  // 0x00 - 0x07
+    ' ', '\n', '!', '!', '!', '!', '!', '!',  // 0x00 - 0x07
     '!', '!', '!', '!', '!', '!', '!', '!',  // 0x08 - 0x0F
     '!', '!', '!', '!', '!', '!', '!', '!',  // 0x10 - 0x17
     'I', '!', 'S', '!', 'J', 'W', 'T', '!',  // 0x18 - 0x1F
@@ -21,9 +23,9 @@ char braille_map[64] = {
 
 // variables
 char print_speed[7];
-unsigned char HL = 1;    
+unsigned char HL = 1;
 unsigned int angle;
-unsigned char letter = 0x00;  
+unsigned char letter = 0x00;
 unsigned char size;
 
 // testing
@@ -34,7 +36,7 @@ unsigned char speed_tester = 0;
 char current_row = 1;
 char current_column = 1;
 char previous_letter = 0x00;
-const char letters_per_line = 20;
+char letters_per_line = 20;
 
 void pen_up(void);
 void pen_down(void);
@@ -77,10 +79,11 @@ void interrupt(void) {
         PORTC ^= 0x02;      // toggle RC1
         PORTC ^= 0x08;      // toggle RC3
         INTCON &= ~0x04;    // clear T0IF
-        TMR0 = 0xE8 + ((size - 50) * (0xF8 - 0xE8)) / (255 - 50);
+        TMR0 = 150 + ((size - 50) * (250 - 150)) / (150 - 50);
+        //TMR0 = 0xF0;
         count_overflow++;
     }
-    
+
     if(count_overflow == 255) speed_tester++;
 
       // if (PIR1 & 0x02) {      // STEPPER MOTOR 2 Toggle
@@ -97,7 +100,7 @@ void interrupt(void) {
           TMR1H = 0;
           TMR1L = 0;
         }
-    
+
         else {                                          //low
           CCPR1H = (40000 - angle) >> 8;       // 40000 counts correspond to 20ms
           CCPR1L = (40000 - angle);
@@ -118,7 +121,7 @@ void main() {
     TRISD = 0xFF;
     PORTD = 0x00;
 
-    
+
     // Initialize System
     ATD_init();
     Timer0_Init();  // Initialize Timer0
@@ -134,21 +137,22 @@ void main() {
     INTCON |= 0x80; // Global Interrupt Enable (GIE)
     INTCON |= 0x40; // Peripheral Interrupt Enable (PIE)
 
+
     while (1) {
-    
+
       size = ATD_read(0);  //0-255
       size = 50 + ((size * (150 - 50)) / 242); //  50-150
-      
+      letters_per_line = MAX_LETTERS_PER_LINE - ((size - 50) * (MAX_LETTERS_PER_LINE - MIN_LETTERS_PER_LINE)) / (150 - 50);
       //IntToStr(size, print_speed);
       //Lcd_Out(1, 1, print_speed);
       //IntToStr(speed_tester, print_speed_tester);
       //Lcd_Out(2, 1, print_speed_tester);
-      
+
 
       //print current char and current size
-      if (previous_letter != braille_map[letter]) {  
+      if (previous_letter != braille_map[letter]) {
             update_current_letter_display(braille_map[letter]);
-            previous_letter = braille_map[letter];  
+            previous_letter = braille_map[letter];
       }
       update_current_size_display(size);  // Update size display
 
@@ -164,37 +168,51 @@ void main() {
                     current_row = 1;
                 }
             }
-            
+
             Lcd_Chr(current_row, current_column, braille_map[letter]);
 
-               if(braille_map[letter] == 'a') draw_a();
-                if(braille_map[letter] == 'b') draw_b();
-                if(braille_map[letter] == 'c') draw_c();
-                if(braille_map[letter] == 'd') draw_d();
-                if(braille_map[letter] == 'e') draw_e();
-                if(braille_map[letter] == 'f') draw_f();
-                if(braille_map[letter] == 'g') draw_g();
-                if(braille_map[letter] == 'h') draw_h();
-                if(braille_map[letter] == 'i') draw_i();
-                if(braille_map[letter] == 'j') draw_j();
-                if(braille_map[letter] == 'k') draw_k();
-                if(braille_map[letter] == 'l') draw_l();
-                if(braille_map[letter] == 'm') draw_m();
-                if(braille_map[letter] == 'n') draw_n();
-                if(braille_map[letter] == 'o') draw_o();
-                if(braille_map[letter] == 'p') draw_p();
-                if(braille_map[letter] == 'q') draw_q();
-                if(braille_map[letter] == 'r') draw_r();
-                if(braille_map[letter] == 's') draw_s();
-                if(braille_map[letter] == 't') draw_t();
-                if(braille_map[letter] == 'u') draw_u();
-                if(braille_map[letter] == 'v') draw_v();
-                if(braille_map[letter] == 'w') draw_w();
-                if(braille_map[letter] == 'x') draw_x();
-                if(braille_map[letter] == 'y') draw_y();
-                if(braille_map[letter] == 'z') draw_z();
+            if (braille_map[letter] == 'A') draw_a();
+            if (braille_map[letter] == 'B') draw_b();
+            if (braille_map[letter] == 'C') draw_c();
+            if (braille_map[letter] == 'D') draw_d();
+            if (braille_map[letter] == 'E') draw_e();
+            if (braille_map[letter] == 'F') draw_f();
+            if (braille_map[letter] == 'G') draw_g();
+            if (braille_map[letter] == 'H') draw_h();
+            if (braille_map[letter] == 'I') draw_i();
+            if (braille_map[letter] == 'J') draw_j();
+            if (braille_map[letter] == 'K') draw_k();
+            if (braille_map[letter] == 'L') draw_l();
+            if (braille_map[letter] == 'M') draw_m();
+            if (braille_map[letter] == 'N') draw_n();
+            if (braille_map[letter] == 'O') draw_o();
+            if (braille_map[letter] == 'P') draw_p();
+            if (braille_map[letter] == 'Q') draw_q();
+            if (braille_map[letter] == 'R') draw_r();
+            if (braille_map[letter] == 'S') draw_s();
+            if (braille_map[letter] == 'T') draw_t();
+            if (braille_map[letter] == 'U') draw_u();
+            if (braille_map[letter] == 'V') draw_v();
+            if (braille_map[letter] == 'W') draw_w();
+            if (braille_map[letter] == 'X') draw_x();
+            if (braille_map[letter] == 'Y') draw_y();
+            if (braille_map[letter] == 'Z') draw_z();
+            if (braille_map[letter] == '\n') {
+              enter_new_line();
+              current_column = 1;
+              current_row++;
+              if (current_row > 3) { // clear screen after 3rd row is full
+                    Lcd_Cmd(_LCD_CLEAR);
+                    current_row = 1;
+                }
+            }
+            if (braille_map[letter] == ' ') draw_space();
 
-            current_column++; // Move to the next column
+            if (braille_map[letter] != '\n') {
+              move_next_letter();
+              current_column++; // Move to the next column
+            }
+
             letter = 0x00; // Clear letter
 
             while ((PORTD & 0x40));
@@ -208,7 +226,7 @@ void main() {
         if (PORTD & 0x10) letter |= 0x10; // Set bit 4
         if (PORTD & 0x20) letter |= 0x20; // Set bit 5
         if (PORTD & 0x80) letter = 0x00;  // Clear all bits
-        
+
     }
 
 }
@@ -384,8 +402,9 @@ void draw_m(void) {
   draw_down(100);
   draw_down(100);
   pen_up();
-  draw_right(100);
-  draw_right(100);
+  draw_left(100);
+  draw_left(100);
+  pen_down();
   draw_up(100);
   draw_up(100);
   draw_down_right(100);
@@ -563,16 +582,17 @@ void draw_z(void) {
 
 
 void draw_space(void) {
-  pen_up();
-  draw_right(100);
-  draw_right(100);
-  draw_right(100);
-  draw_right(100);
-  pen_down();
+  // pen_up();
+  // draw_right(100);
+  // draw_right(100);
+  // draw_right(100);
+  // draw_right(100);
+  // pen_down();
 }
 
 void move_next_letter(void) {
   pen_up();
+  draw_right(100);
   draw_right(100);
   draw_right(100);
   pen_down();
@@ -581,8 +601,9 @@ void move_next_letter(void) {
 unsigned char times;
 void enter_new_line(void) {
   pen_up();
-  for(times = 0; times<2*(letters_per_line-1); times++) draw_left(100);
+  for(times = 0; times<2*(current_column)+2; times++) draw_left(100);
   draw_down(100);
   draw_down(100);
+     draw_down(100);
   pen_down();
 }
