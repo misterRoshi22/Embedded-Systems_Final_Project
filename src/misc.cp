@@ -1,5 +1,5 @@
-#line 1 "C:/Users/20210383/Desktop/project/src/misc.c"
-#line 1 "c:/users/20210383/desktop/project/src/../include/misc.h"
+#line 1 "C:/Users/20210383/Embedded-Systems_Final_Project/src/misc.c"
+#line 1 "c:/users/20210383/embedded-systems_final_project/src/../include/misc.h"
 
 
 
@@ -7,7 +7,7 @@ void Delay(unsigned int delay);
 void update_current_letter_display(char current_letter);
 void update_current_size_display(unsigned int input_size);
 void ShiftCharsLeft(char *str);
-#line 3 "C:/Users/20210383/Desktop/project/src/misc.c"
+#line 3 "C:/Users/20210383/Embedded-Systems_Final_Project/src/misc.c"
 void Delay(unsigned int delay) {
  while (delay--) {
  Delay_ms(1);

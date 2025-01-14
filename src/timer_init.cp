@@ -1,12 +1,12 @@
-#line 1 "C:/Users/20210383/Desktop/project/src/timer_init.c"
-#line 1 "c:/users/20210383/desktop/project/src/../include/timer_init.h"
+#line 1 "C:/Users/20210383/Embedded-Systems_Final_Project/src/timer_init.c"
+#line 1 "c:/users/20210383/embedded-systems_final_project/src/../include/timer_init.h"
 
 
 
 void Timer0_Init(void);
 void Timer2_Init(void);
 void Timer1_Init(void);
-#line 3 "C:/Users/20210383/Desktop/project/src/timer_init.c"
+#line 3 "C:/Users/20210383/Embedded-Systems_Final_Project/src/timer_init.c"
 void Timer0_Init(void) {
  OPTION_REG = 0x05;
  TMR0 = 0xF0;
@@ -15,12 +15,15 @@ void Timer0_Init(void) {
 }
 
 void Timer2_Init(void) {
- T2CON = 0x06;
+ T2CON &= ~0x07;
+ T2CON |= 0x04;
+
  PR2 = 63;
+
  PIR1 &= ~0x02;
  PIE1 |= 0x02;
-
 }
+
 
 void Timer1_Init(void) {
  TMR1H = 0;

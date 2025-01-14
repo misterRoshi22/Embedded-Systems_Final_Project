@@ -8,12 +8,15 @@ void Timer0_Init(void) {
 }
 
 void Timer2_Init(void) {
-    T2CON = 0x06;   // Timer2 on, prescaler=1:16, postscaler=1:1
-    PR2 = 63;      // PR2 = 63 for ~512 µs overflow at 8 MHz
-    PIR1 &= ~0x02;   // TMR2IF = 0
-    PIE1 |= 0x02;    // TMR2IE = 1
+    T2CON &= ~0x07;   // Clear Timer2 configuration bits (TMR2ON, T2CKPS)
+    T2CON |= 0x04;    // Enable Timer2 (TMR2ON) and set prescaler to 1:16 (T2CKPS = 10)
 
+    PR2 = 63;         // Load PR2 for ~512 Âµs overflow at 8 MHz
+
+    PIR1 &= ~0x02;    // Clear Timer2 interrupt flag (TMR2IF)
+    PIE1 |= 0x02;     // Enable Timer2 interrupt (TMR2IE)
 }
+
 
 void Timer1_Init(void) {
         TMR1H = 0;

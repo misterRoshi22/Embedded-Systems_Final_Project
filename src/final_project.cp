@@ -1,11 +1,11 @@
-#line 1 "C:/Users/20210383/Desktop/project/src/final_project.c"
-#line 1 "c:/users/20210383/desktop/project/src/../include/atd.h"
+#line 1 "C:/Users/20210383/Embedded-Systems_Final_Project/src/final_project.c"
+#line 1 "c:/users/20210383/embedded-systems_final_project/src/../include/atd.h"
 
 
 
 void ATD_init(void);
 unsigned int ATD_read(unsigned char channel);
-#line 1 "c:/users/20210383/desktop/project/src/../include/lcd_config.h"
+#line 1 "c:/users/20210383/embedded-systems_final_project/src/../include/lcd_config.h"
 
 sbit LCD_RS at RB4_bit;
 sbit LCD_EN at RB5_bit;
@@ -20,7 +20,7 @@ sbit LCD_D4_Direction at TRISB0_bit;
 sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D7_Direction at TRISB3_bit;
-#line 1 "c:/users/20210383/desktop/project/src/../include/draw_base.h"
+#line 1 "c:/users/20210383/embedded-systems_final_project/src/../include/draw_base.h"
 
 
 
@@ -33,14 +33,14 @@ void draw_down_right(unsigned char speed);
 void draw_down_left(unsigned char speed);
 void draw_up_right(unsigned char speed);
 void draw_up_left(unsigned char speed);
-#line 1 "c:/users/20210383/desktop/project/src/../include/timer_init.h"
+#line 1 "c:/users/20210383/embedded-systems_final_project/src/../include/timer_init.h"
 
 
 
 void Timer0_Init(void);
 void Timer2_Init(void);
 void Timer1_Init(void);
-#line 1 "c:/users/20210383/desktop/project/src/../include/misc.h"
+#line 1 "c:/users/20210383/embedded-systems_final_project/src/../include/misc.h"
 
 
 
@@ -48,11 +48,13 @@ void Delay(unsigned int delay);
 void update_current_letter_display(char current_letter);
 void update_current_size_display(unsigned int input_size);
 void ShiftCharsLeft(char *str);
-#line 8 "C:/Users/20210383/Desktop/project/src/final_project.c"
+#line 8 "C:/Users/20210383/Embedded-Systems_Final_Project/src/final_project.c"
 const unsigned int SERVO_UP = 1800;
 const unsigned int SERVO_DOWN = 1000;
 const char MIN_LETTERS_PER_LINE = 10;
 const char MAX_LETTERS_PER_LINE = 20;
+const char DRAW_DELAY_TIME = 100;
+const char PEN_MOVE_TIME = 50;
 
 char braille_map[64] = {
  ' ', '\n', '!', '!', '!', '!', '!', '!',
@@ -71,6 +73,7 @@ unsigned char HL = 1;
 unsigned int angle;
 unsigned char letter = 0x00;
 unsigned char size;
+unsigned char timer0_load_value;
 
 
 unsigned char count_overflow = 0;
@@ -116,18 +119,16 @@ void draw_space(void);
 void move_next_letter(void);
 void enter_new_line(void);
 
-
 void interrupt(void) {
 
  if (INTCON & 0x04) {
+
  PORTC ^= 0x02;
  PORTC ^= 0x08;
+
  INTCON &= ~0x04;
-TMR0 = 150 + ((size - 50) * (250 - 150)) / (150 - 50);
+ TMR0 = timer0_load_value;
 
-
-
- count_overflow++;
  }
 
  if(count_overflow == 255) speed_tester++;
@@ -189,6 +190,7 @@ void main() {
  size = ATD_read(0);
  size = 50 + ((size * (150 - 50)) / 242);
  letters_per_line = MAX_LETTERS_PER_LINE - ((size - 50) * (MAX_LETTERS_PER_LINE - MIN_LETTERS_PER_LINE)) / (150 - 50);
+ timer0_load_value = 150 + ((size - 50) * (250 - 150)) / (150 - 50);
 
 
 
@@ -202,7 +204,7 @@ void main() {
  }
  update_current_size_display(size);
 
- if ((PORTD & 0x40) == 0x40) {
+ if (PORTD & 0x10) {
  Delay(50);
  if (current_column > letters_per_line) {
  current_row++;
@@ -261,17 +263,17 @@ void main() {
 
  letter = 0x00;
 
- while ((PORTD & 0x40));
+ while ((PORTD & 0x10));
  Delay(50);
  }
 
- if (PORTD & 0x01) letter |= 0x01;
- if (PORTD & 0x02) letter |= 0x02;
- if (PORTD & 0x04) letter |= 0x04;
- if (PORTD & 0x08) letter |= 0x08;
- if (PORTD & 0x10) letter |= 0x10;
- if (PORTD & 0x20) letter |= 0x20;
- if (PORTD & 0x80) letter = 0x00;
+ if (PORTD & 0x02) letter |= 0x01;
+ if (PORTD & 0x01) letter |= 0x02;
+ if (PORTD & 0x20) letter |= 0x04;
+ if (PORTD & 0x80) letter |= 0x08;
+ if (PORTD & 0x40) letter |= 0x10;
+ if (PORTD & 0x08) letter |= 0x20;
+ if (PORTD & 0x04) letter = 0x00;
 
  }
 
@@ -280,160 +282,160 @@ void main() {
 
 void pen_up(void) {
  angle = SERVO_UP;
- Delay(100);
+ Delay(DRAW_DELAY_TIME);
 }
 
 void pen_down(void) {
  angle = SERVO_DOWN;
- Delay(100);
+ Delay(DRAW_DELAY_TIME);
 }
 
 void draw_a(void) {
- draw_up_left(100);
- draw_down(100);
- draw_down(100);
- draw_up(100);
- draw_right(100);
- draw_down_right(100);
+ draw_up_left(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_down_right(DRAW_DELAY_TIME);
  pen_up();
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_b(void) {
- draw_right(100);
- draw_down(100);
- draw_left(100);
- draw_left(100);
- draw_up(100);
- draw_up(100);
- draw_right(100);
- draw_down(100);
- draw_left(100);
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
 }
 
 void draw_c(void) {
  pen_up();
- draw_up_right(100);
+ draw_up_right(DRAW_DELAY_TIME);
  pen_down();
- draw_left(100);
- draw_left(100);
- draw_down(100);
- draw_down(100);
- draw_right(100);
- draw_right(100);
+ draw_left(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_up();
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_d(void) {
- draw_up_left(100);
- draw_down(100);
- draw_down(100);
- draw_up_right(100);
+ draw_up_left(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
 }
 
 void draw_e(void) {
- draw_left(100);
- draw_up(100);
- draw_right(100);
+ draw_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_down();
- draw_left(100);
- draw_up(100);
- draw_right(100);
+ draw_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
 }
 
 void draw_f(void) {
- draw_left(100);
- draw_up(100);
- draw_right(100);
+ draw_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
- draw_down(100);
- draw_left(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
  pen_down();
- draw_up(100);
+ draw_up(DRAW_DELAY_TIME);
  pen_up();
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_g(void) {
- draw_right(100);
- draw_down_left(100);
- draw_up_left(100);
- draw_up_right(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_down_left(DRAW_DELAY_TIME);
+ draw_up_left(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
 }
 
 void draw_h(void) {
- draw_left(100);
- draw_up(100);
- draw_down(100);
- draw_down(100);
+ draw_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_up();
- draw_right(100);
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_down();
- draw_up(100);
- draw_up(100);
- draw_down(100);
- draw_left(100);
+ draw_up(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
 }
 
 void draw_i(void) {
- draw_up(100);
- draw_right(100);
- draw_left(100);
- draw_left(100);
+ draw_up(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_down();
- draw_right(100);
- draw_right(100);
- draw_left(100);
- draw_up(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
 }
 
 void draw_j(void) {
  pen_up();
- draw_up(100);
+ draw_up(DRAW_DELAY_TIME);
  pen_down();
- draw_right(100);
- draw_down(100);
- draw_down_left(100);
- draw_up(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
 }
 
 void draw_k(void) {
- draw_up_right(100);
+ draw_up_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_down();
- draw_up_left(100);
- draw_up(100);
- draw_down(100);
- draw_down(100);
- draw_up(100);
+ draw_up_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
 }
 
 void draw_l(void) {
  pen_up();
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
  pen_down();
- draw_down(100);
- draw_down(100);
- draw_right(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_up();
- draw_up(100);
+ draw_up(DRAW_DELAY_TIME);
  pen_down();
 
 
@@ -444,186 +446,186 @@ void draw_l(void) {
 }
 
 void draw_m(void) {
- draw_up_right(100);
- draw_down(100);
- draw_down(100);
+ draw_up_right(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_up();
- draw_left(100);
- draw_left(100);
+ draw_left(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
  pen_down();
- draw_up(100);
- draw_up(100);
- draw_down_right(100);
+ draw_up(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_down_right(DRAW_DELAY_TIME);
 }
 
 void draw_n(void) {
  pen_up();
- draw_down_left(100);
+ draw_down_left(DRAW_DELAY_TIME);
  pen_down();
- draw_up(100);
- draw_up(100);
- draw_down_right(100);
- draw_down_right(100);
- draw_up(100);
- draw_up(100);
+ draw_up(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_down_right(DRAW_DELAY_TIME);
+ draw_down_right(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
  pen_up();
- draw_down_right(100);
+ draw_down_right(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_o(void) {
  pen_up();
- draw_up(100);
+ draw_up(DRAW_DELAY_TIME);
  pen_down();
- draw_down_right(100);
- draw_down_left(100);
- draw_up_left(100);
- draw_up_right(100);
+ draw_down_right(DRAW_DELAY_TIME);
+ draw_down_left(DRAW_DELAY_TIME);
+ draw_up_left(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_p(void) {
- draw_right(100);
- draw_up(100);
- draw_left(100);
- draw_down(100);
- draw_down(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_up();
- draw_up_right(100);
+ draw_up_right(DRAW_DELAY_TIME);
 }
 
 void draw_q(void) {
- draw_down_right(100);
+ draw_down_right(DRAW_DELAY_TIME);
  pen_up();
- draw_left(100);
+ draw_left(DRAW_DELAY_TIME);
  pen_down();
- draw_up_left(100);
- draw_up_right(100);
- draw_down_right(100);
- draw_down_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
+ draw_down_right(DRAW_DELAY_TIME);
+ draw_down_left(DRAW_DELAY_TIME);
  pen_up();
- draw_up(100);
+ draw_up(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_r(void) {
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
  pen_up();
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
  pen_down();
- draw_up_left(100);
- draw_up(100);
- draw_down_right(100);
- draw_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_down_right(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
 }
 
 void draw_s(void) {
  pen_up();
- draw_down_left(100);
+ draw_down_left(DRAW_DELAY_TIME);
  pen_down();
- draw_right(100);
- draw_up_right(100);
- draw_left(100);
- draw_left(100);
- draw_up_right(100);
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down_left(100);
+ draw_down_left(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_t(void){
- draw_up(100);
- draw_right(100);
- draw_left(100);
- draw_left(100);
+ draw_up(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
  pen_up();
- draw_down_right(100);
+ draw_down_right(DRAW_DELAY_TIME);
  pen_down();
- draw_down(100);
- draw_up(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
 }
 
 void draw_u(void) {
  pen_up();
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
  pen_down();
- draw_down(100);
- draw_down_right(100);
- draw_right(100);
- draw_up(100);
- draw_up(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
  pen_up();
- draw_down_left(100);
+ draw_down_left(DRAW_DELAY_TIME);
  pen_down();
 }
 
 void draw_v(void) {
  pen_up();
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
  pen_down();
- draw_down(100);
- draw_down(100);
- draw_up_right(100);
- draw_up_right(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down_left(100);
+ draw_down_left(DRAW_DELAY_TIME);
 }
 
 void draw_x(void) {
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_down();
- draw_up_right(100);
- draw_up_right(100);
+ draw_up_right(DRAW_DELAY_TIME);
+ draw_up_right(DRAW_DELAY_TIME);
  pen_up();
- draw_down(100);
- draw_down(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_down();
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
 }
 
 void draw_w(void) {
- draw_down_left(100);
- draw_up(100);
- draw_up(100);
+ draw_down_left(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
+ draw_up(DRAW_DELAY_TIME);
  pen_up();
- draw_right(100);
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_down();
- draw_down(100);
- draw_down(100);
- draw_up_left(100);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_up_left(DRAW_DELAY_TIME);
 }
 
 void draw_y(void) {
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
  pen_up();
- draw_right(100);
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_down();
- draw_down_left(100);
- draw_down(100);
+ draw_down_left(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_up();
- draw_up(100);
+ draw_up(DRAW_DELAY_TIME);
 }
 
 void draw_z(void) {
- draw_up_right(100);
- draw_left(100);
- draw_left(100);
+ draw_up_right(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
+ draw_left(DRAW_DELAY_TIME);
  pen_up();
- draw_down_right(100);
+ draw_down_right(DRAW_DELAY_TIME);
  pen_down();
- draw_down_left(100);
- draw_right(100);
- draw_right(100);
+ draw_down_left(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_up();
- draw_up_left(100);
+ draw_up_left(DRAW_DELAY_TIME);
 }
 
 
@@ -638,18 +640,18 @@ void draw_space(void) {
 
 void move_next_letter(void) {
  pen_up();
- draw_right(100);
- draw_right(100);
- draw_right(100);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
+ draw_right(DRAW_DELAY_TIME);
  pen_down();
 }
 
 unsigned char times;
 void enter_new_line(void) {
  pen_up();
- for(times = 0; times<2*(current_column)+2; times++) draw_left(100);
- draw_down(100);
- draw_down(100);
- draw_down(100);
+ for(times = 0; times<2*(current_column)+2; times++) draw_left(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
+ draw_down(DRAW_DELAY_TIME);
  pen_down();
 }

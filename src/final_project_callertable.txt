@@ -53,6 +53,49 @@ main
 			Delay_1us
 			Delay_5500us
 			Delay_50us
+	draw_a
+		draw_up_left
+			Delay
+		draw_down
+			Delay
+		draw_up
+			Delay
+		draw_right
+			Delay
+		draw_down_right
+			Delay
+		pen_up
+			Delay
+		pen_down
+			Delay
+	draw_f
+		draw_left
+			Delay
+		draw_up
+			Delay
+		draw_right
+			Delay
+		pen_up
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+	enter_new_line
+		pen_up
+			Delay
+		draw_left
+			Delay
+		draw_down
+			Delay
+		pen_down
+			Delay
+	draw_space
+	move_next_letter
+		pen_up
+			Delay
+		draw_right
+			Delay
+		pen_down
+			Delay
 interrupt
-	Div_16x16_S
-		Div_16x16_S_L
